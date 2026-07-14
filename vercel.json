@@ -1,0 +1,9 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "env": [
+    "MONGODB_URI",
+    "MONGODB_DB",
+    "SECRET_KEY"
+  ]
+}

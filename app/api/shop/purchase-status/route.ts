@@ -14,32 +14,37 @@ export const revalidate = 0;
  * edebilir.
  */
 export async function GET(request: NextRequest) {
-  const session = await getUserFromRequest(request);
-  if (!session) {
+  try {
+    const session = await getUserFromRequest(request);
+    if (!session) {
     return NextResponse.json({ error: "Once giris yapmalisiniz." }, { status: 401 });
-  }
+    }
 
-  const requestId = request.nextUrl.searchParams.get("requestId");
-  if (!requestId || !ObjectId.isValid(requestId)) {
+    const requestId = request.nextUrl.searchParams.get("requestId");
+    if (!requestId || !ObjectId.isValid(requestId)) {
     return NextResponse.json({ error: "Gecersiz istek id." }, { status: 400 });
-  }
+    }
 
-  const db = await getDb();
-  const purchaseRequest = await db
+    const db = await getDb();
+    const purchaseRequest = await db
     .collection<PurchaseRequestDoc>("purchase_requests")
     .findOne({ _id: new ObjectId(requestId) });
 
-  if (!purchaseRequest) {
+    if (!purchaseRequest) {
     return NextResponse.json({ error: "Istek bulunamadi." }, { status: 404 });
-  }
+    }
 
-  // Kullanicinin sadece kendi istegini sorgulayabilmesini garanti ediyoruz.
-  if (purchaseRequest.username.toLowerCase() !== session.usernameLower) {
+    // Kullanicinin sadece kendi istegini sorgulayabilmesini garanti ediyoruz.
+    if (purchaseRequest.username.toLowerCase() !== session.usernameLower) {
     return NextResponse.json({ error: "Yetkisiz." }, { status: 403 });
-  }
+    }
 
-  return NextResponse.json({
+    return NextResponse.json({
     status: purchaseRequest.status,
     failReason: purchaseRequest.failReason,
-  });
+    });
+  } catch (error) {
+    console.error("API error:", error);
+    return NextResponse.json({ error: "Sunucu hatası." }, { status: 500 });
+  }
 }

@@ -9,31 +9,36 @@ import type { UserDoc } from "@/lib/types";
  * parametresi de destekler: /api/admin/users?q=oyuncuadi
  */
 export async function GET(request: NextRequest) {
-  if (!(await isAdminRequest(request))) {
+  try {
+    if (!(await isAdminRequest(request))) {
     return NextResponse.json({ error: "Yetkisiz." }, { status: 401 });
-  }
+    }
 
-  const query = request.nextUrl.searchParams.get("q")?.trim();
+    const query = request.nextUrl.searchParams.get("q")?.trim();
 
-  const db = await getDb();
-  const filter = query
+    const db = await getDb();
+    const filter = query
     ? { username_lower: { $regex: query.toLowerCase(), $options: "i" } }
     : {};
 
-  const users = await db
+    const users = await db
     .collection<UserDoc>("users")
     .find(filter, { projection: { password: 0 } })
     .sort({ registerDate: -1 })
     .limit(200)
     .toArray();
 
-  return NextResponse.json({
+    return NextResponse.json({
     users: users.map((u) => ({
-      _id: u._id?.toString(),
-      username: u.username,
-      credits: u.credits,
-      registerDate: u.registerDate,
-      ipAddress: u.ipAddress,
+    _id: u._id?.toString(),
+    username: u.username,
+    credits: u.credits,
+    registerDate: u.registerDate,
+    ipAddress: u.ipAddress,
     })),
-  });
+    });
+  } catch (error) {
+    console.error("API error:", error);
+    return NextResponse.json({ error: "Sunucu hatası." }, { status: 500 });
+  }
 }

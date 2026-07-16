@@ -9,6 +9,7 @@ import {
   Trophy,
   HelpCircle,
   LogIn,
+  Coins,
   Menu,
   X,
 } from "lucide-react";

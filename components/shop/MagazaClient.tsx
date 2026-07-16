@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { Check, Loader2, Coins, ShoppingCart, LogIn, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Nav } from "@/components/Nav";
+import { Slot } from "@/components/Slot";
 import { Footer } from "@/components/Footer";
 
 

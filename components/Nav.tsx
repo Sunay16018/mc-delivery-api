@@ -82,9 +82,11 @@ export function Nav() {
                 href="/profil"
                 className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-ice-300/[0.05] border border-ice-300/10 hover:border-ice-300/20 transition-all"
               >
-                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-ice-300 to-ice-500 flex items-center justify-center">
-                  <User size={13} className="text-ice-950" />
-                </div>
+                <img
+                  src={`https://mc-heads.net/avatar/${user.username}/64`}
+                  alt={user.username}
+                  className="w-8 h-8 rounded-lg object-cover border border-ice-300/[0.15]"
+                />
                 <div className="hidden sm:flex flex-col leading-none">
                   <span className="text-frost-200 text-xs font-semibold">{user.username}</span>
                   <span className="text-ice-300 text-[10px] font-mono flex items-center gap-0.5">

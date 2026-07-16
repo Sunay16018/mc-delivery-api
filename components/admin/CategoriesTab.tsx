@@ -106,7 +106,7 @@ export function CategoriesTab() {
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-500/[0.08] border border-red-500/15 text-red-400 text-sm mb-4">
+        <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-500/[0.08] border border-red-500/[0.15] text-red-400 text-sm mb-4">
           <AlertCircle size={15} /> {error}
         </div>
       )}

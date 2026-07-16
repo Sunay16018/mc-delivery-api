@@ -71,9 +71,11 @@ export default function ProfilPage() {
         <div className="card-surface p-6 mb-6 relative overflow-hidden">
           <div className="absolute -top-16 -right-16 w-32 h-32 bg-ice-300/[0.05] rounded-full blur-3xl pointer-events-none" />
           <div className="relative flex items-center gap-5">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-ice-300 to-ice-500 flex items-center justify-center shadow-glow">
-              <User size={28} className="text-ice-950" />
-            </div>
+            <img
+              src={`https://mc-heads.net/avatar/${user.username}/128`}
+              alt={user.username}
+              className="w-16 h-16 rounded-2xl object-cover border-2 border-ice-300/[0.2] shadow-glow"
+            />
             <div>
               <h1 className="font-display font-bold text-2xl text-frost-100">{user.username}</h1>
               <div className="flex items-center gap-2 mt-1">

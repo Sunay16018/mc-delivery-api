@@ -12,7 +12,7 @@ export default function Home() {
       {/* HERO */}
       <section className="relative overflow-hidden">
         {/* Background glow */}
-        <div className="absolute inset-0 bg-hero-glow pointer-events-none" />
+        <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse 60% 50% at 50% 0%, rgba(94,200,242,0.08), transparent)" }} />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-ice-300/[0.03] rounded-full blur-[120px] pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-5 sm:px-8 py-24 sm:py-32 relative">
@@ -230,9 +230,9 @@ function ProductPreview({
   return (
     <div className="card-surface p-5 relative overflow-hidden group">
       {featured && (
-        <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full opacity-15 blur-xl pointer-events-none" style={{ background: color }} />
+        <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full opacity-[0.15] blur-xl pointer-events-none" style={{ background: color }} />
       )}
-      <div className="absolute top-0 left-4 right-4 h-px" style={{ background: `linear-gradient(90deg, transparent, ${color}30, transparent)` }} />
+      <div className="absolute top-0 left-4 right-4 h-px" style={{ background: color, opacity: 0.2 }} />
 
       <div className="relative">
         <div className="flex items-center justify-between mb-4">

@@ -68,7 +68,7 @@ export default function GirisPage() {
               </p>
 
               {error && (
-                <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-red-500/[0.08] border border-red-500/15 text-red-400 text-sm mb-6">
+                <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-red-500/[0.08] border border-red-500/[0.15] text-red-400 text-sm mb-6">
                   <AlertCircle size={16} />
                   {error}
                 </div>

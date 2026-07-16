@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/mongodb";
+import { isAuthorized } from "@/lib/auth";
 
 
 export const runtime = "nodejs"; // MongoDB driver Edge runtime'da calismaz

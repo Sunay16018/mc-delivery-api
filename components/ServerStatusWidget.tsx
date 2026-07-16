@@ -1,117 +1,90 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Users, Copy, Check, Loader2 } from "lucide-react";
-import type { ServerStatusResult } from "@/app/api/server-status/route";
+import { Users, Wifi, WifiOff } from "lucide-react";
 
-const SERVER_ADDRESS = "zefircraft.mcsh.io";
+interface StatusData {
+  online: boolean;
+  players: number;
+  maxPlayers: number;
+  version?: string;
+}
 
 export function ServerStatusWidget() {
-  const [status, setStatus] = useState<ServerStatusResult | null>(null);
+  const [status, setStatus] = useState<StatusData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      try {
-        const res = await fetch("/api/server-status");
-        const data = (await res.json()) as ServerStatusResult;
-        if (!cancelled) setStatus(data);
-      } catch {
-        if (!cancelled)
-          setStatus({
-            online: false,
-            players: { online: 0, max: 0 },
-            version: null,
-            motd: null,
-            icon: null,
-            edition: null,
-            checkedAt: new Date().toISOString(),
-          });
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    load();
-    const interval = setInterval(load, 60000);
-    return () => {
-      cancelled = true;
-      clearInterval(interval);
-    };
+    fetch("/api/server-status")
+      .then((r) => r.json())
+      .then((d) => setStatus(d))
+      .catch(() => setStatus({ online: false, players: 0, maxPlayers: 0 }))
+      .finally(() => setLoading(false));
   }, []);
 
-  function handleCopy() {
-    navigator.clipboard.writeText(SERVER_ADDRESS);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1800);
+  if (loading) {
+    return (
+      <div className="card-surface p-6 w-full max-w-sm animate-pulse">
+        <div className="h-4 bg-ice-300/10 rounded w-3/4 mb-3" />
+        <div className="h-3 bg-ice-300/10 rounded w-1/2" />
+      </div>
+    );
   }
 
+  const isOnline = status?.online ?? false;
+  const players = status?.players ?? 0;
+  const maxPlayers = status?.maxPlayers ?? 0;
+
   return (
-    <div className="slot pixel-corners w-full max-w-md p-5 sm:p-6 bg-[var(--stone-900)]">
-      <div className="flex items-center justify-between mb-4">
-        <span className="font-mono-slot text-xs uppercase tracking-widest text-[var(--stone-400)]">
-          Sunucu Durumu
-        </span>
-        {loading ? (
-          <Loader2
-            size={14}
-            className="animate-spin text-[var(--stone-400)]"
-          />
-        ) : (
-          <span className="flex items-center gap-1.5">
-            <span
-              className={`status-dot w-2 h-2 rounded-full ${
-                status?.online ? "bg-[var(--emerald)]" : "bg-[var(--redstone)]"
-              }`}
-            />
-            <span
-              className={`font-mono-slot text-xs font-medium ${
-                status?.online
-                  ? "text-[var(--emerald)]"
-                  : "text-[var(--redstone)]"
-              }`}
-            >
-              {status?.online ? "ÇEVRİMİÇİ" : "ÇEVRİMDIŞI"}
-            </span>
-          </span>
-        )}
-      </div>
+    <div className="card-surface p-6 w-full max-w-sm relative overflow-hidden">
+      {/* Subtle glow */}
+      <div className="absolute -top-20 -right-20 w-40 h-40 bg-ice-300/5 rounded-full blur-3xl pointer-events-none" />
 
-      <button
-        onClick={handleCopy}
-        className="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-sm bg-[var(--stone-800)] border border-[var(--stone-700)] hover:border-[var(--emerald)] transition-colors group mb-4"
-      >
-        <span className="font-mono-slot text-sm text-[var(--bone-100)] truncate">
-          {SERVER_ADDRESS}
-        </span>
-        {copied ? (
-          <Check size={15} className="text-[var(--emerald)] shrink-0" />
-        ) : (
-          <Copy
-            size={15}
-            className="text-[var(--stone-400)] group-hover:text-[var(--emerald)] shrink-0"
-          />
-        )}
-      </button>
-
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-[var(--bone-200)]">
-          <Users size={16} className="text-[var(--stone-400)]" />
-          <span className="font-mono-slot text-sm">
-            {loading
-              ? "—"
-              : `${status?.players.online ?? 0} / ${status?.players.max ?? 0}`}
-          </span>
-          <span className="text-xs text-[var(--stone-400)]">oyuncu</span>
+      <div className="relative">
+        <div className="flex items-center gap-3 mb-4">
+          <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+            isOnline ? "bg-ice-300/10" : "bg-frost-700/20"
+          }`}>
+            {isOnline ? (
+              <Wifi size={20} className="text-ice-300" />
+            ) : (
+              <WifiOff size={20} className="text-frost-600" />
+            )}
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${
+                isOnline ? "bg-ice-300 shadow-[0_0_8px_rgba(94,200,242,0.5)] animate-pulse-slow" : "bg-frost-600"
+              }`} />
+              <span className="text-frost-200 font-semibold text-sm">
+                {isOnline ? "Çevrimiçi" : "Çevrimdışı"}
+              </span>
+            </div>
+            <span className="text-frost-600 text-xs">zefircraft.mcsh.io</span>
+          </div>
         </div>
-        {status?.version && (
-          <span className="font-mono-slot text-xs text-[var(--stone-400)]">
-            {status.version}
-          </span>
-        )}
+
+        <div className="flex items-center gap-3">
+          <div className="flex-1 bg-frost-900/50 rounded-xl p-3 border border-ice-300/5">
+            <div className="flex items-center gap-2 mb-1">
+              <Users size={14} className="text-ice-300" />
+              <span className="text-frost-500 text-xs font-medium">Oyuncular</span>
+            </div>
+            <span className="text-frost-100 font-display font-bold text-xl">
+              {players}
+              <span className="text-frost-600 text-sm font-normal"> / {maxPlayers}</span>
+            </span>
+          </div>
+
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText("zefircraft.mcsh.io");
+            }}
+            className="px-4 py-3 rounded-xl bg-ice-300/5 border border-ice-300/10 text-ice-300 text-xs font-semibold hover:bg-ice-300/10 hover:border-ice-300/20 transition-all"
+          >
+            Kopyala
+          </button>
+        </div>
       </div>
     </div>
   );

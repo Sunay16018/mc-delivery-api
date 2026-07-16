@@ -1,31 +1,27 @@
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
-import { Slot } from "@/components/Slot";
+import { ShieldAlert, Ban, MessageSquare, Lock } from "lucide-react";
 
-const RULES = [
+const rules = [
   {
-    title: "Saygılı iletişim",
-    desc: "Hakaret, ayrımcılık ve taciz içeren mesajlar yasaktır. Tartışmalar sohbeti bozmadan yürütülmelidir.",
+    icon: <ShieldAlert size={18} />,
+    title: "Hile Kullanımı",
+    desc: "X-ray, fly hack, kill aura ve benzeri hile yazılımları kesinlikle yasaktır. Tespit edilen hesaplar kalıcı olarak banlanır.",
   },
   {
-    title: "Grief ve hırsızlık yok",
-    desc: "Başka oyuncuların arazisine izinsiz müdahale, bina yıkma veya eşya çalma anında banla sonuçlanır.",
+    icon: <Ban size={18} />,
+    title: "Zarar Verme (Griefing)",
+    desc: "Başka oyuncuların yapılarını izinsiz yıkmak, çalmak veya patlatmak yasaktır. Claim sistemi dışındaki alanlar da korunur.",
   },
   {
-    title: "Hile ve exploit kullanımı yasak",
-    desc: "X-ray, auto-clicker, dupe bug'ları veya izinsiz mod kullanımı tespit edilirse kalıcı ban uygulanır.",
+    icon: <MessageSquare size={18} />,
+    title: "Saygılı Davranış",
+    desc: "Irkçı, cinsiyetçi, ayrımcı veya hakaret içeren davranışlara tolerans gösterilmez.",
   },
   {
-    title: "Reklam yapma",
-    desc: "Başka sunucuların, Discord sunucularının veya ticari ürünlerin reklamı sohbette veya tabelalarda yasaktır.",
-  },
-  {
-    title: "Uygun yapı içeriği",
-    desc: "Nefret sembolleri, müstehcen içerik veya rahatsız edici pixel art inşa etmek yasaktır.",
-  },
-  {
-    title: "Personel talimatlarına uy",
-    desc: "Moderatör ve adminlerin uyarılarına saygı göster. Anlaşmazlık varsa Discord üzerinden itiraz oluşturabilirsin.",
+    icon: <Lock size={18} />,
+    title: "Reklam",
+    desc: "Diğer sunucuların, sitelerin veya Discord sunucularının reklamı yasaktır.",
   },
 ];
 
@@ -33,40 +29,39 @@ export default function KurallarPage() {
   return (
     <>
       <Nav />
-
       <section className="max-w-3xl mx-auto px-5 sm:px-8 py-16 sm:py-20">
-        <span className="font-mono-slot text-xs uppercase tracking-widest text-[var(--emerald)] mb-4 inline-block">
-          Kurallar
-        </span>
-        <h1 className="font-display font-semibold text-3xl sm:text-5xl tracking-tight mb-4">
-          Herkes için adil bir dünya
+        <span className="section-label mb-3 inline-block">Kurallar</span>
+        <h1 className="font-display font-bold text-3xl sm:text-4xl tracking-tight mb-3 text-frost-100">
+          Sunucu Kuralları
         </h1>
-        <p className="text-base text-[var(--bone-200)] leading-relaxed">
-          Bu kurallar herkesin keyifli oynaması için var. İhlaller ciddiyetine
-          göre uyarı, geçici veya kalıcı banla sonuçlanabilir.
+        <p className="text-frost-500 text-base mb-10">
+          Herkes için adil ve eğlenceli bir ortam sağlamak adına lütfen kurallara uyun.
         </p>
-      </section>
 
-      <section className="max-w-3xl mx-auto px-5 sm:px-8 pb-24 space-y-4">
-        {RULES.map((rule, i) => (
-          <div key={rule.title} className="flex gap-5 items-start">
-            <Slot size={44} className="shrink-0">
-              <span className="font-mono-slot text-sm font-bold text-[var(--emerald)]">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-            </Slot>
-            <div className="pt-1.5 pb-5 border-b border-[var(--stone-700)] flex-1">
-              <h3 className="font-display font-semibold text-base mb-1.5">
-                {rule.title}
-              </h3>
-              <p className="text-sm text-[var(--stone-400)] leading-relaxed">
-                {rule.desc}
-              </p>
+        <div className="space-y-3">
+          {rules.map((rule, i) => (
+            <div key={i} className="card-surface p-5 flex items-start gap-4">
+              <div className="w-9 h-9 rounded-xl bg-ice-300/8 flex items-center justify-center text-ice-300 shrink-0 mt-0.5">
+                {rule.icon}
+              </div>
+              <div>
+                <h3 className="font-semibold text-frost-200 text-sm mb-1">
+                  {i + 1}. {rule.title}
+                </h3>
+                <p className="text-frost-500 text-sm leading-relaxed">{rule.desc}</p>
+              </div>
             </div>
-          </div>
-        ))}
-      </section>
+          ))}
+        </div>
 
+        <div className="mt-10 p-5 rounded-2xl bg-amber-500/5 border border-amber-500/10">
+          <p className="text-amber-400/80 text-sm">
+            <strong className="text-amber-400">Not:</strong> Kuralları ihlal eden oyuncular
+            yetkili ekibimiz tarafından uyarı, geçici ban veya kalıcı ban cezaları alabilir.
+            Cezaların itirazı için Destek sayfasını kullanabilirsiniz.
+          </p>
+        </div>
+      </section>
       <Footer />
     </>
   );

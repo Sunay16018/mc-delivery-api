@@ -1,103 +1,108 @@
-import { Trophy } from "lucide-react";
+"use client";
+
+import { useEffect, useState } from "react";
+import { Trophy, Medal, Crown, ArrowUpDown, Loader2 } from "lucide-react";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 
-// NOT: Bu veriler örnektir. Gerçek plugin API'niz hazır olduğunda
-// bu diziyi o kaynaktan fetch eden bir server component ile değiştirin.
-const PLAYERS = [
-  { rank: 1, name: "KayraOfficial", rankName: "Elmas", score: 18420 },
-  { rank: 2, name: "zeynepcrafts", rankName: "Elmas", score: 16110 },
-  { rank: 3, name: "berat_yildiz", rankName: "Altın", score: 14875 },
-  { rank: 4, name: "MiraNova", rankName: "Altın", score: 12980 },
-  { rank: 5, name: "eren.build", rankName: "Zümrüt", score: 11540 },
-  { rank: 6, name: "sude_kaya", rankName: "Zümrüt", score: 10220 },
-  { rank: 7, name: "OzanTheBuilder", rankName: "Üye", score: 9110 },
-  { rank: 8, name: "ipek_ates", rankName: "Üye", score: 8340 },
-];
-
-const RANK_COLORS: Record<string, string> = {
-  Elmas: "#5DD5E8",
-  Altın: "var(--gold)",
-  Zümrüt: "var(--emerald)",
-  Üye: "var(--stone-400)",
-};
+interface LeaderboardEntry {
+  username: string;
+  credits: number;
+  rank?: string;
+}
 
 export default function SiralamaPage() {
+  const [data, setData] = useState<LeaderboardEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState<"credits" | "username">("credits");
+
+  useEffect(() => {
+    fetch("/api/admin/users")
+      .then((r) => r.json())
+      .then((d) => {
+        const users = (d.users ?? []).map((u: any) => ({
+          username: u.username,
+          credits: u.credits ?? 0,
+        }));
+        users.sort((a: LeaderboardEntry, b: LeaderboardEntry) => b.credits - a.credits);
+        setData(users);
+      })
+      .catch(() => setData([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const sorted = [...data].sort((a, b) => {
+    if (sortBy === "credits") return b.credits - a.credits;
+    return a.username.localeCompare(b.username);
+  });
+
+  const rankIcon = (i: number) => {
+    if (i === 0) return <Crown size={18} className="text-amber-400" />;
+    if (i === 1) return <Medal size={18} className="text-frost-400" />;
+    if (i === 2) return <Medal size={18} className="text-amber-700" />;
+    return <span className="text-frost-600 font-mono text-xs w-[18px] text-center">{i + 1}</span>;
+  };
+
   return (
     <>
       <Nav />
-
-      <section className="max-w-4xl mx-auto px-5 sm:px-8 py-16 sm:py-20">
-        <span className="font-mono-slot text-xs uppercase tracking-widest text-[var(--emerald)] mb-4 inline-block">
-          Sıralama
-        </span>
-        <h1 className="font-display font-semibold text-3xl sm:text-5xl tracking-tight mb-4">
-          En iyi oyuncular
-        </h1>
-        <p className="text-base text-[var(--bone-200)] max-w-xl leading-relaxed">
-          Haftalık aktivite puanına göre sıralanır. Puanlar blok yerleştirme,
-          görev tamamlama ve etkinlik katılımından kazanılır.
-        </p>
-
-        <div className="mt-4 slot pixel-corners px-4 py-3 inline-block">
-          <p className="text-xs text-[var(--stone-400)] font-mono-slot">
-            Örnek veri gösteriliyor — canlı skorlar plugin entegrasyonu
-            tamamlandığında burada görünecek.
-          </p>
-        </div>
-      </section>
-
-      <section className="max-w-4xl mx-auto px-5 sm:px-8 pb-24">
-        <div className="slot pixel-corners overflow-hidden">
-          {PLAYERS.map((player, i) => (
-            <div
-              key={player.name}
-              className={`flex items-center gap-4 sm:gap-6 px-5 sm:px-6 py-4 ${
-                i !== PLAYERS.length - 1 ? "border-b border-[var(--stone-700)]" : ""
-              }`}
-            >
-              <div className="w-8 flex justify-center shrink-0">
-                {player.rank <= 3 ? (
-                  <Trophy
-                    size={18}
-                    className={
-                      player.rank === 1
-                        ? "text-[var(--gold)]"
-                        : player.rank === 2
-                        ? "text-[var(--bone-200)]"
-                        : "text-[#c2793f]"
-                    }
-                  />
-                ) : (
-                  <span className="font-mono-slot text-sm text-[var(--stone-400)]">
-                    {player.rank}
-                  </span>
-                )}
-              </div>
-
-              <span className="font-medium text-sm sm:text-base flex-1 truncate">
-                {player.name}
-              </span>
-
-              <span
-                className="font-mono-slot text-[10px] sm:text-xs uppercase tracking-wide px-2.5 py-1 rounded-sm shrink-0"
-                style={{
-                  color: RANK_COLORS[player.rankName],
-                  border: `1px solid ${RANK_COLORS[player.rankName]}`,
-                  backgroundColor: `${RANK_COLORS[player.rankName]}14`,
-                }}
-              >
-                {player.rankName}
-              </span>
-
-              <span className="font-mono-slot text-sm text-[var(--bone-200)] w-20 text-right shrink-0">
-                {player.score.toLocaleString("tr-TR")}
-              </span>
+      <section className="max-w-3xl mx-auto px-5 sm:px-8 py-16 sm:py-20">
+        <div className="mb-10">
+          <span className="section-label mb-3 inline-block">Sıralama</span>
+          <div className="flex items-end justify-between flex-wrap gap-4">
+            <div>
+              <h1 className="font-display font-bold text-3xl sm:text-4xl tracking-tight mb-2 text-frost-100">
+                Liderlik Tablosu
+              </h1>
+              <p className="text-frost-500 text-base">
+                En yüksek kredi bakiyesine sahip oyuncular.
+              </p>
             </div>
-          ))}
+            <button
+              onClick={() => setSortBy(sortBy === "credits" ? "username" : "credits")}
+              className="btn-ghost flex items-center gap-2"
+            >
+              <ArrowUpDown size={14} />
+              {sortBy === "credits" ? "Krediye göre" : "İsme göre"}
+            </button>
+          </div>
         </div>
-      </section>
 
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 size={24} className="text-ice-300 animate-spin" />
+          </div>
+        ) : sorted.length === 0 ? (
+          <div className="empty-state py-20">
+            <Trophy size={40} className="text-frost-700 mb-4" />
+            <span className="text-frost-500 text-base font-medium">Henüz veri yok</span>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {sorted.map((entry, i) => (
+              <div
+                key={entry.username}
+                className={`flex items-center gap-4 px-5 py-4 rounded-2xl border transition-all ${
+                  i < 3
+                    ? "bg-gradient-to-r from-ice-300/[0.03] to-transparent border-ice-300/8"
+                    : "bg-frost-900/20 border-ice-300/[0.03] hover:border-ice-300/6"
+                }`}
+              >
+                <div className="w-8 flex justify-center">{rankIcon(i)}</div>
+                <div className="flex-1 min-w-0">
+                  <span className="text-frost-200 font-semibold text-sm truncate block">
+                    {entry.username}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-mono text-ice-300 font-bold text-sm">{entry.credits}</span>
+                  <span className="text-frost-600 text-xs">kredi</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
       <Footer />
     </>
   );

@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
-import { Manrope, Chakra_Petch, JetBrains_Mono } from "next/font/google";
+import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const bodyFont = Manrope({
+const bodyFont = Inter({
   variable: "--font-body",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["400", "500", "600", "700"],
 });
 
-const displayFont = Chakra_Petch({
+const displayFont = Space_Grotesk({
   variable: "--font-display",
   subsets: ["latin"],
   weight: ["500", "600", "700"],
@@ -23,7 +23,7 @@ const monoFont = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Zefircraft — Hayatta kal. İnşa et. Zirveye çık.",
   description:
-    "Zefircraft topluluk sunucusuna katıl. Anlık sunucu durumu, mağaza ve oyuncu sıralaması bir arada.",
+    "Zefircraft topluluk sunucusuna katıl. Anlık sunucu durumu, mağaza, oyuncu sıralaması ve destek sistemi bir arada.",
 };
 
 export default function RootLayout({

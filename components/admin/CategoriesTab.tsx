@@ -1,239 +1,166 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { Plus, Trash2, Pencil, Loader2, X, Check } from "lucide-react";
-import type { CategoryDoc, CategoryInput } from "@/lib/types";
+import { useEffect, useState } from "react";
+import { Plus, Trash2, Edit2, X, Check, Loader2, AlertCircle, Tag } from "lucide-react";
 
-type CategoryWithId = Omit<CategoryDoc, "_id"> & { _id: string };
-
-const EMPTY_FORM: CategoryInput = { name: "", order: 0 };
+interface Category {
+  _id: string;
+  name: string;
+  order: number;
+}
 
 export function CategoriesTab() {
-  const router = useRouter();
-  const [categories, setCategories] = useState<CategoryWithId[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const [formOpen, setFormOpen] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [form, setForm] = useState<CategoryInput>(EMPTY_FORM);
+  const [editing, setEditing] = useState<Category | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [name, setName] = useState("");
+  const [order, setOrder] = useState(0);
+  const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
-  const [formError, setFormError] = useState<string | null>(null);
 
-  const loadCategories = useCallback(async () => {
+  async function load() {
     setLoading(true);
-    setError(null);
     try {
       const res = await fetch("/api/admin/categories");
-      if (res.status === 401) {
-        router.push("/admin");
-        return;
-      }
       const data = await res.json();
       setCategories(data.categories ?? []);
     } catch {
-      setError("Kategoriler yüklenirken bir hata oluştu.");
+      setError("Veriler yüklenemedi.");
     } finally {
       setLoading(false);
     }
-  }, [router]);
+  }
 
   useEffect(() => {
-    loadCategories();
-  }, [loadCategories]);
+    load();
+  }, []);
 
-  function openCreateForm() {
-    setEditingId(null);
-    setForm(EMPTY_FORM);
-    setFormError(null);
-    setFormOpen(true);
+  function openCreate() {
+    setName("");
+    setOrder(categories.length);
+    setCreating(true);
+    setEditing(null);
+    setError("");
   }
 
-  function openEditForm(category: CategoryWithId) {
-    setEditingId(category._id);
-    setForm({ name: category.name, order: category.order });
-    setFormError(null);
-    setFormOpen(true);
+  function openEdit(c: Category) {
+    setName(c.name);
+    setOrder(c.order);
+    setEditing(c);
+    setCreating(false);
+    setError("");
   }
 
-  function closeForm() {
-    setFormOpen(false);
-    setEditingId(null);
-  }
-
-  async function handleSave() {
-    setFormError(null);
-    if (!form.name.trim()) {
-      setFormError("İsim alanı zorunludur.");
-      return;
-    }
-
+  async function save() {
     setSaving(true);
+    setError("");
     try {
-      const url = editingId ? `/api/admin/categories/${editingId}` : "/api/admin/categories";
-      const method = editingId ? "PUT" : "POST";
+      const url = editing ? `/api/admin/categories/${editing._id}` : "/api/admin/categories";
+      const method = editing ? "PUT" : "POST";
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ name, order }),
       });
-
-      if (res.status === 401) {
-        router.push("/admin");
-        return;
-      }
+      const data = await res.json();
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        setFormError(data.error ?? "Kaydetme başarısız.");
-        return;
+        setError(data.error ?? "Kaydedilemedi.");
+      } else {
+        setCreating(false);
+        setEditing(null);
+        load();
       }
-
-      closeForm();
-      await loadCategories();
     } catch {
-      setFormError("Bağlantı hatası oluştu.");
+      setError("Bağlantı hatası.");
     } finally {
       setSaving(false);
     }
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm("Bu kategoriyi silmek istediğinizden emin misiniz? Bu kategorideki ürünler kategorisiz kalır.")) return;
+  async function remove(id: string) {
+    if (!confirm("Bu kategoriyi silmek istediğinize emin misiniz?")) return;
     try {
       const res = await fetch(`/api/admin/categories/${id}`, { method: "DELETE" });
-      if (res.status === 401) {
-        router.push("/admin");
-        return;
-      }
-      if (res.ok) {
-        setCategories((prev) => prev.filter((c) => c._id !== id));
-      }
+      if (res.ok) load();
     } catch {
-      alert("Silme işlemi sırasında hata oluştu.");
+      setError("Silinemedi.");
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 size={24} className="text-ice-300 animate-spin" />
+      </div>
+    );
   }
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
-        <div>
-          <h2 className="font-display font-semibold text-2xl tracking-tight mb-1">
-            Mağaza kategorileri
-          </h2>
-          <p className="text-sm text-[var(--stone-400)]">
-            Kategoriler mağaza sayfasındaki filtre butonlarında görünür.
-          </p>
-        </div>
-        <button
-          onClick={openCreateForm}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-sm text-sm font-semibold bg-[var(--emerald)] text-[var(--stone-950)] hover:bg-[var(--emerald-dim)] transition-colors"
-        >
-          <Plus size={16} /> Yeni kategori
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="font-display font-bold text-2xl text-frost-100">Kategoriler</h1>
+        <button onClick={openCreate} className="btn-primary text-sm py-2 px-4">
+          <Plus size={15} /> Yeni Kategori
         </button>
       </div>
 
       {error && (
-        <div className="slot pixel-corners p-4 mb-6 text-sm text-[var(--redstone)]">{error}</div>
-      )}
-
-      {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 size={24} className="animate-spin text-[var(--stone-400)]" />
-        </div>
-      ) : categories.length === 0 ? (
-        <p className="text-sm text-[var(--stone-400)] slot pixel-corners p-5">
-          Henüz kategori yok.
-        </p>
-      ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {categories.map((cat) => (
-            <div key={cat._id} className="slot pixel-corners p-5 flex items-center justify-between">
-              <div>
-                <h4 className="font-display font-semibold text-sm">{cat.name}</h4>
-                <p className="text-xs text-[var(--stone-400)] font-mono-slot">sıra: {cat.order}</p>
-              </div>
-              <div className="flex gap-1.5">
-                <button
-                  onClick={() => openEditForm(cat)}
-                  className="p-1.5 rounded-sm text-[var(--stone-400)] hover:text-[var(--emerald)] hover:bg-[var(--stone-800)] transition-colors"
-                  aria-label="Düzenle"
-                >
-                  <Pencil size={14} />
-                </button>
-                <button
-                  onClick={() => handleDelete(cat._id)}
-                  className="p-1.5 rounded-sm text-[var(--stone-400)] hover:text-[var(--redstone)] hover:bg-[var(--stone-800)] transition-colors"
-                  aria-label="Sil"
-                >
-                  <Trash2 size={14} />
-                </button>
-              </div>
-            </div>
-          ))}
+        <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-500/8 border border-red-500/15 text-red-400 text-sm mb-4">
+          <AlertCircle size={15} /> {error}
         </div>
       )}
 
-      {formOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="slot pixel-corners w-full max-w-sm bg-[var(--stone-900)] p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="font-display font-semibold text-lg">
-                {editingId ? "Kategoriyi düzenle" : "Yeni kategori"}
-              </h3>
-              <button onClick={closeForm} className="text-[var(--stone-400)] hover:text-[var(--bone-100)]" aria-label="Kapat">
-                <X size={18} />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-[11px] font-mono-slot uppercase tracking-widest text-[var(--stone-400)] mb-1.5">
-                  İsim
-                </label>
-                <input
-                  type="text"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="Ranklar"
-                  className="input-field"
-                  autoFocus
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] font-mono-slot uppercase tracking-widest text-[var(--stone-400)] mb-1.5">
-                  Sıra
-                </label>
-                <input
-                  type="number"
-                  value={form.order}
-                  onChange={(e) => setForm({ ...form, order: Number(e.target.value) })}
-                  className="input-field"
-                />
-              </div>
-
-              {formError && <p className="text-sm text-[var(--redstone)] font-medium">{formError}</p>}
-
-              <div className="flex gap-3 pt-2">
-                <button
-                  onClick={closeForm}
-                  className="flex-1 py-2.5 rounded-sm text-sm font-medium border border-[var(--stone-600)] text-[var(--bone-200)] hover:border-[var(--stone-400)] transition-colors"
-                >
-                  İptal
-                </button>
-                <button
-                  onClick={handleSave}
-                  disabled={saving}
-                  className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-sm text-sm font-semibold bg-[var(--emerald)] text-[var(--stone-950)] hover:bg-[var(--emerald-dim)] disabled:opacity-50 transition-colors"
-                >
-                  {saving ? <Loader2 size={15} className="animate-spin" /> : <Check size={15} />}
-                  Kaydet
-                </button>
-              </div>
-            </div>
+      {(creating || editing) && (
+        <div className="card-surface p-5 mb-6">
+          <h3 className="font-semibold text-frost-200 mb-4">{editing ? "Kategoriyi Düzenle" : "Yeni Kategori"}</h3>
+          <div className="flex gap-3">
+            <input
+              className="input-field flex-1"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Kategori adı"
+            />
+            <input
+              type="number"
+              className="input-field w-24"
+              value={order}
+              onChange={(e) => setOrder(Number(e.target.value))}
+              placeholder="Sıra"
+            />
+            <button onClick={save} disabled={saving} className="btn-primary text-sm py-2 px-4">
+              {saving ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} />}
+            </button>
+            <button onClick={() => { setCreating(false); setEditing(null); }} className="btn-secondary text-sm py-2 px-3">
+              <X size={14} />
+            </button>
           </div>
         </div>
       )}
+
+      <div className="space-y-2">
+        {categories.map((c) => (
+          <div key={c._id} className="card-surface p-4 flex items-center gap-4">
+            <Tag size={16} className="text-ice-300" />
+            <div className="flex-1">
+              <span className="font-semibold text-frost-200 text-sm">{c.name}</span>
+              <span className="text-frost-600 text-xs ml-2">Sıra: {c.order}</span>
+            </div>
+            <button onClick={() => openEdit(c)} className="btn-ghost p-2">
+              <Edit2 size={14} />
+            </button>
+            <button onClick={() => remove(c._id)} className="btn-ghost p-2 text-red-400 hover:text-red-300">
+              <Trash2 size={14} />
+            </button>
+          </div>
+        ))}
+        {categories.length === 0 && (
+          <div className="empty-state py-16">
+            <Tag size={32} className="text-frost-800 mb-3" />
+            <span className="text-frost-600 text-sm">Henüz kategori yok.</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

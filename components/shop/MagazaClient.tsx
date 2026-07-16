@@ -1,15 +1,17 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { Check, Loader2, Coins, ShoppingCart, LogIn } from "lucide-react";
+import { Check, Loader2, Coins, ShoppingCart, LogIn, Sparkles, ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { Nav } from "@/components/Nav";
+import { Footer } from "@/components/Footer";
+import { Slot } from "@/components/Slot";
 
 interface PublicProduct {
   id: string;
   category: "rank" | "item";
   categoryId: string | null;
   name: string;
-  price: string;
   priceCredits: number;
   color: string;
   perks: string[];
@@ -73,8 +75,7 @@ export function MagazaClient() {
     loadCatalog();
   }, [loadSession, loadCatalog]);
 
-  // Satin alma "pending" durumundayken (ve gecerli bir requestId varken)
-  // durumu birkac saniyede bir sorgula.
+  // Poll purchase status
   useEffect(() => {
     if (purchase.status !== "pending" || !purchase.requestId) return;
     const interval = setInterval(async () => {
@@ -83,14 +84,14 @@ export function MagazaClient() {
         const data = await res.json();
         if (data.status === "completed") {
           setPurchase({ status: "completed", productId: purchase.productId });
-          loadSession(); // guncel krediyi cek
+          loadSession();
           clearInterval(interval);
         } else if (data.status === "failed") {
           setPurchase({ status: "failed", productId: purchase.productId, reason: data.failReason });
           clearInterval(interval);
         }
       } catch {
-        // gecici aginin kopmasi durumunda sessizce devam et, bir sonraki turda tekrar dene
+        // silent retry
       }
     }, 3000);
     return () => clearInterval(interval);
@@ -126,50 +127,67 @@ export function MagazaClient() {
 
   return (
     <>
-      <section className="max-w-6xl mx-auto px-5 sm:px-8 py-16 sm:py-20">
-        <span className="font-mono-slot text-xs uppercase tracking-widest text-[var(--emerald)] mb-4 inline-block">
-          Mağaza
-        </span>
-        <h1 className="font-display font-semibold text-3xl sm:text-5xl tracking-tight mb-4">
-          Sunucuyu destekle, avantajları kap
-        </h1>
-        <p className="text-base text-[var(--bone-200)] max-w-xl leading-relaxed">
-          Satın alımlar kredi ile yapılır ve karakterine otomatik olarak
-          teslim edilir. Oyun içi dengeyi bozmaz.
-        </p>
+      <Nav />
 
-        <div className="mt-6 flex flex-wrap items-center gap-3">
+      <section className="max-w-7xl mx-auto px-5 sm:px-8 py-16 sm:py-20">
+        {/* Header */}
+        <div className="mb-10">
+          <span className="section-label mb-3 inline-block">Mağaza</span>
+          <h1 className="font-display font-bold text-3xl sm:text-4xl tracking-tight mb-3 text-frost-100">
+            Sunucuyu destekle, avantajları kap
+          </h1>
+          <p className="text-frost-500 text-base max-w-xl leading-relaxed">
+            Satın alımlar kredi ile yapılır ve karakterine otomatik olarak teslim edilir.
+          </p>
+        </div>
+
+        {/* User bar */}
+        <div className="flex flex-wrap items-center gap-3 mb-10">
           {sessionChecked && username ? (
-            <div className="slot pixel-corners px-4 py-3 flex items-center gap-2.5">
-              <Coins size={16} className="text-[var(--gold)]" />
-              <span className="text-sm text-[var(--bone-200)]">
-                <span className="font-semibold text-[var(--bone-100)]">{username}</span>{" "}
-                — bakiye:{" "}
-                <span className="font-mono-slot text-[var(--gold)]">{credits ?? 0} kredi</span>
-              </span>
+            <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-ice-300/5 border border-ice-300/10">
+              <Coins size={16} className="text-ice-300" />
+              <span className="text-frost-200 text-sm font-semibold">{username}</span>
+              <span className="w-px h-4 bg-ice-300/10" />
+              <span className="text-ice-300 text-sm font-mono font-bold">{credits} kredi</span>
             </div>
-          ) : sessionChecked ? (
+          ) : (
             <Link
               href="/giris"
-              className="flex items-center gap-2 slot pixel-corners px-4 py-3 text-sm font-medium text-[var(--bone-200)] hover:text-[var(--emerald)] transition-colors"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-ice-300/5 border border-ice-300/10 text-frost-400 text-sm font-medium hover:text-ice-300 hover:border-ice-300/20 transition-all"
             >
-              <LogIn size={16} className="text-[var(--emerald)]" />
-              Alışveriş yapmak için giriş yap
+              <LogIn size={15} />
+              Satın almak için giriş yap
             </Link>
-          ) : null}
-        </div>
-      </section>
+          )}
 
-      {/* KATEGORI FILTRESI */}
-      {categories.length > 0 && (
-        <section className="max-w-6xl mx-auto px-5 sm:px-8 pb-6">
-          <div className="flex flex-wrap gap-2">
+          {purchase.status === "completed" && (
+            <span className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium">
+              <Check size={15} />
+              Satın alma tamamlandı!
+            </span>
+          )}
+          {purchase.status === "pending" && (
+            <span className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-ice-300/5 border border-ice-300/10 text-ice-300 text-sm font-medium">
+              <Loader2 size={15} className="animate-spin" />
+              İşleniyor...
+            </span>
+          )}
+          {purchase.status === "failed" && (
+            <span className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium">
+              {(purchase as any).reason ?? "Satın alma başarısız"}
+            </span>
+          )}
+        </div>
+
+        {/* Category filter */}
+        {categories.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-8">
             <button
               onClick={() => setActiveCategory("all")}
-              className={`px-3.5 py-2 rounded-sm text-xs font-mono-slot uppercase tracking-widest transition-colors ${
+              className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                 activeCategory === "all"
-                  ? "bg-[var(--emerald)] text-[var(--stone-950)]"
-                  : "slot pixel-corners text-[var(--stone-400)] hover:text-[var(--bone-200)]"
+                  ? "bg-ice-300/10 text-ice-100 border border-ice-300/20"
+                  : "bg-frost-900/50 text-frost-500 border border-transparent hover:bg-ice-300/5 hover:text-frost-300"
               }`}
             >
               Tümü
@@ -178,263 +196,94 @@ export function MagazaClient() {
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
-                className={`px-3.5 py-2 rounded-sm text-xs font-mono-slot uppercase tracking-widest transition-colors ${
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                   activeCategory === cat.id
-                    ? "bg-[var(--emerald)] text-[var(--stone-950)]"
-                    : "slot pixel-corners text-[var(--stone-400)] hover:text-[var(--bone-200)]"
+                    ? "bg-ice-300/10 text-ice-100 border border-ice-300/20"
+                    : "bg-frost-900/50 text-frost-500 border border-transparent hover:bg-ice-300/5 hover:text-frost-300"
                 }`}
               >
                 {cat.name}
               </button>
             ))}
           </div>
-        </section>
-      )}
+        )}
 
-      {loading ? (
-        <div className="flex items-center justify-center py-24">
-          <Loader2 size={24} className="animate-spin text-[var(--stone-400)]" />
-        </div>
-      ) : (
-        <>
-          {/* RANKLAR */}
-          {ranks.length > 0 && (
-            <section className="max-w-6xl mx-auto px-5 sm:px-8 pb-20">
-              <h2 className="font-display font-semibold text-2xl tracking-tight mb-8">
-                Ranklar
-              </h2>
-              <div className="grid md:grid-cols-3 gap-6">
-                {ranks.map((rank) => (
-                  <RankCard
-                    key={rank.id}
-                    product={rank}
-                    loggedIn={Boolean(username)}
-                    purchase={purchase}
-                    onPurchase={handlePurchase}
-                  />
-                ))}
+        {/* Loading */}
+        {loading && (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="card-surface p-5 animate-pulse">
+                <div className="h-5 bg-ice-300/10 rounded w-2/3 mb-4" />
+                <div className="h-3 bg-ice-300/10 rounded w-full mb-2" />
+                <div className="h-3 bg-ice-300/10 rounded w-3/4 mb-6" />
+                <div className="h-8 bg-ice-300/10 rounded w-1/3" />
               </div>
-            </section>
-          )}
+            ))}
+          </div>
+        )}
 
-          {/* EŞYALAR */}
-          {items.length > 0 && (
-            <section className="max-w-6xl mx-auto px-5 sm:px-8 pb-24 border-t border-[var(--stone-700)] pt-16">
-              <h2 className="font-display font-semibold text-2xl tracking-tight mb-8">
-                Eşyalar
-              </h2>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {items.map((item) => (
-                  <ItemCard
-                    key={item.id}
-                    product={item}
-                    loggedIn={Boolean(username)}
-                    purchase={purchase}
-                    onPurchase={handlePurchase}
-                  />
-                ))}
-              </div>
-            </section>
-          )}
-
-          {ranks.length === 0 && items.length === 0 && (
-            <section className="max-w-6xl mx-auto px-5 sm:px-8 pb-24">
-              <p className="text-sm text-[var(--stone-400)] slot pixel-corners p-6 text-center">
-                Bu kategoride henüz ürün yok.
-              </p>
-            </section>
-          )}
-        </>
-      )}
-    </>
-  );
-}
-
-function PurchaseButton({
-  product,
-  loggedIn,
-  purchase,
-  onPurchase,
-}: {
-  product: PublicProduct;
-  loggedIn: boolean;
-  purchase: PurchaseState;
-  onPurchase: (id: string) => void;
-}) {
-  const isThisProduct = purchase.status !== "idle" && purchase.productId === product.id;
-
-  if (!loggedIn) {
-    return (
-      <Link
-        href="/giris"
-        className="w-full flex items-center justify-center gap-2 py-3 rounded-sm text-sm font-semibold border border-[var(--stone-600)] text-[var(--bone-200)] hover:border-[var(--emerald)] hover:text-[var(--emerald)] transition-colors"
-      >
-        <LogIn size={15} /> Giriş yap
-      </Link>
-    );
-  }
-
-  if (isThisProduct && purchase.status === "pending") {
-    return (
-      <button
-        disabled
-        className="w-full flex items-center justify-center gap-2 py-3 rounded-sm text-sm font-semibold bg-[var(--stone-800)] text-[var(--stone-400)] border border-[var(--stone-700)]"
-      >
-        <Loader2 size={15} className="animate-spin" /> İşleniyor...
-      </button>
-    );
-  }
-
-  if (isThisProduct && purchase.status === "completed") {
-    return (
-      <button
-        disabled
-        className="w-full flex items-center justify-center gap-2 py-3 rounded-sm text-sm font-semibold bg-[var(--emerald)]/20 text-[var(--emerald)] border border-[var(--emerald)]"
-      >
-        <Check size={15} /> Teslim edildi!
-      </button>
-    );
-  }
-
-  if (isThisProduct && purchase.status === "failed") {
-    return (
-      <div className="space-y-2">
-        <p className="text-xs text-[var(--redstone)] text-center">
-          {purchase.reason ?? "Satın alma başarısız"}
-        </p>
-        <button
-          onClick={() => onPurchase(product.id)}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-sm text-sm font-semibold bg-[var(--emerald)] text-[var(--stone-950)] hover:bg-[var(--emerald-dim)] transition-colors"
-        >
-          <ShoppingCart size={15} /> Tekrar dene
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <button
-      onClick={() => onPurchase(product.id)}
-      className="w-full flex items-center justify-center gap-2 py-3 rounded-sm text-sm font-semibold bg-[var(--emerald)] text-[var(--stone-950)] hover:bg-[var(--emerald-dim)] transition-colors"
-    >
-      <ShoppingCart size={15} /> Satın al
-    </button>
-  );
-}
-
-function RankCard({
-  product,
-  loggedIn,
-  purchase,
-  onPurchase,
-}: {
-  product: PublicProduct;
-  loggedIn: boolean;
-  purchase: PurchaseState;
-  onPurchase: (id: string) => void;
-}) {
-  return (
-    <div
-      className={`slot pixel-corners p-7 flex flex-col ${
-        product.featured ? "slot-highlight" : ""
-      }`}
-    >
-      {product.featured && (
-        <span className="font-mono-slot text-[10px] uppercase tracking-widest text-[var(--emerald)] mb-3">
-          En Popüler
-        </span>
-      )}
-      {product.imageBase64 ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={product.imageBase64}
-          alt={product.name}
-          className="w-12 h-12 pixel-corners object-cover mb-5"
-        />
-      ) : (
-        <div
-          className="w-12 h-12 pixel-corners flex items-center justify-center mb-5"
-          style={{
-            backgroundColor: `${product.color}1A`,
-            border: `2px solid ${product.color}`,
-          }}
-        >
-          <span className="w-4 h-4" style={{ backgroundColor: product.color }} />
-        </div>
-      )}
-      <h3 className="font-display font-semibold text-xl mb-1">{product.name}</h3>
-      {product.description && (
-        <p className="text-xs text-[var(--stone-400)] mb-3">{product.description}</p>
-      )}
-      <p className="font-mono-slot text-2xl font-bold mb-6 text-[var(--gold)]">
-        {product.priceCredits}
-        <span className="text-xs font-normal text-[var(--stone-400)] ml-1">kredi</span>
-      </p>
-
-      <ul className="space-y-3 mb-8 flex-1">
-        {product.perks.map((perk) => (
-          <li key={perk} className="flex items-start gap-2.5">
-            <Check size={15} className="text-[var(--emerald)] mt-0.5 shrink-0" />
-            <span className="text-sm text-[var(--bone-200)]">{perk}</span>
-          </li>
-        ))}
-      </ul>
-
-      <PurchaseButton
-        product={product}
-        loggedIn={loggedIn}
-        purchase={purchase}
-        onPurchase={onPurchase}
-      />
-    </div>
-  );
-}
-
-function ItemCard({
-  product,
-  loggedIn,
-  purchase,
-  onPurchase,
-}: {
-  product: PublicProduct;
-  loggedIn: boolean;
-  purchase: PurchaseState;
-  onPurchase: (id: string) => void;
-}) {
-  return (
-    <div className="slot pixel-corners p-5 flex flex-col gap-3">
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3 min-w-0">
-          {product.imageBase64 ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={product.imageBase64}
-              alt={product.name}
-              className="w-9 h-9 pixel-corners object-cover shrink-0"
-            />
-          ) : (
-            <div
-              className="w-9 h-9 pixel-corners flex items-center justify-center shrink-0"
-              style={{
-                backgroundColor: `${product.color}1A`,
-                border: `2px solid ${product.color}`,
-              }}
-            >
-              <span className="w-3.5 h-3.5" style={{ backgroundColor: product.color }} />
+        {/* Ranks */}
+        {!loading && ranks.length > 0 && (
+          <div className="mb-12">
+            <h2 className="font-display font-bold text-xl text-frost-200 mb-5 flex items-center gap-2">
+              <Sparkles size={18} className="text-ice-300" />
+              Ranklar
+            </h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {ranks.map((p) => (
+                <Slot
+                  key={p.id}
+                  name={p.name}
+                  priceCredits={p.priceCredits}
+                  color={p.color}
+                  perks={p.perks}
+                  featured={p.featured}
+                  imageBase64={p.imageBase64}
+                  description={p.description}
+                  onPurchase={() => handlePurchase(p.id)}
+                  disabled={purchase.status === "pending" || !username}
+                />
+              ))}
             </div>
-          )}
-          <span className="text-sm text-[var(--bone-100)] truncate">{product.name}</span>
-        </div>
-        <span className="font-mono-slot text-sm text-[var(--gold)] shrink-0">
-          {product.priceCredits} kredi
-        </span>
-      </div>
-      <PurchaseButton
-        product={product}
-        loggedIn={loggedIn}
-        purchase={purchase}
-        onPurchase={onPurchase}
-      />
-    </div>
+          </div>
+        )}
+
+        {/* Items */}
+        {!loading && items.length > 0 && (
+          <div>
+            <h2 className="font-display font-bold text-xl text-frost-200 mb-5 flex items-center gap-2">
+              <ShoppingCart size={18} className="text-ice-300" />
+              Itemlar
+            </h2>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {items.map((p) => (
+                <Slot
+                  key={p.id}
+                  name={p.name}
+                  priceCredits={p.priceCredits}
+                  color={p.color}
+                  perks={p.perks}
+                  featured={p.featured}
+                  imageBase64={p.imageBase64}
+                  description={p.description}
+                  onPurchase={() => handlePurchase(p.id)}
+                  disabled={purchase.status === "pending" || !username}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {!loading && filteredProducts.length === 0 && (
+          <div className="empty-state py-20">
+            <ShoppingCart size={40} className="text-frost-700 mb-4" />
+            <span className="text-frost-500 text-base font-medium">Henüz ürün yok</span>
+            <span className="text-frost-600 text-sm mt-1">Yakında eklenecek!</span>
+          </div>
+        )}
+      </section>
+
+      <Footer />
+    </>
   );
 }

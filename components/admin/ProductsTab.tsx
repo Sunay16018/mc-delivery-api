@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Plus, Trash2, Edit2, X, Check, ImageIcon, Loader2, AlertCircle, ShoppingBag } from "lucide-react";
+import { Plus, Trash2, Edit2, X, Check, Loader2, AlertCircle, ShoppingBag } from "lucide-react";
 
 interface Product {
   _id: string;

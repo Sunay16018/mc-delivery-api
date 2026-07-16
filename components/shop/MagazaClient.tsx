@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { Check, Loader2, Coins, ShoppingCart, LogIn, Sparkles, ChevronRight } from "lucide-react";
+import { Check, Loader2, Coins, ShoppingCart, LogIn, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";

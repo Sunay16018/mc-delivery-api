@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Search, Loader2, AlertCircle, User, Coins, Calendar } from "lucide-react";
+import { Search, Loader2, AlertCircle, User } from "lucide-react";
 
 interface UserEntry {
   _id: string;

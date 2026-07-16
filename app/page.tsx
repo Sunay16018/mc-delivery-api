@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ShoppingBag, Trophy, ScrollText, ArrowRight, Shield, Zap, Globe, ChevronRight } from "lucide-react";
+import { ShoppingBag, Trophy, ArrowRight, Shield, Zap, Globe, ChevronRight } from "lucide-react";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { ServerStatusWidget } from "@/components/ServerStatusWidget";

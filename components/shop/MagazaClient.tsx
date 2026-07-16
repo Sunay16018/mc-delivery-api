@@ -5,7 +5,7 @@ import { Check, Loader2, Coins, ShoppingCart, LogIn, Sparkles } from "lucide-rea
 import Link from "next/link";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
-import { Slot } from "@/components/Slot";
+
 
 interface PublicProduct {
   id: string;

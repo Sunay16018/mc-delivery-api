@@ -227,7 +227,7 @@ export function ProductsTab() {
               <label className="text-frost-500 text-xs font-medium mb-1.5 block">Görsel</label>
               <input type="file" accept="image/*" onChange={handleImage} className="text-frost-500 text-sm" />
               {form.imageBase64 && (
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                // eslint-disable-next-line @next/next/no-img-element
                 <img src={form.imageBase64} alt="preview" className="mt-2 w-20 h-20 rounded-lg object-cover border border-ice-300/10" />
               )}
             </div>

@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { Plus, Trash2, Pencil, Loader2, X, Check, Upload } from "lucide-react";
 import type { ProductDoc, ProductInput, ProductCategory, CategoryDoc } from "@/lib/types";
 
-type ProductWithId = ProductDoc & { _id: string };
-type CategoryWithId = CategoryDoc & { _id: string };
+type ProductWithId = Omit<ProductDoc, "_id"> & { _id: string };
+type CategoryWithId = Omit<CategoryDoc, "_id"> & { _id: string };
 
 const EMPTY_FORM: ProductInput = {
   category: "rank",

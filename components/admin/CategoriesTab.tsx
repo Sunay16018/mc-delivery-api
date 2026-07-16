@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Plus, Trash2, Pencil, Loader2, X, Check } from "lucide-react";
 import type { CategoryDoc, CategoryInput } from "@/lib/types";
 
-type CategoryWithId = CategoryDoc & { _id: string };
+type CategoryWithId = Omit<CategoryDoc, "_id"> & { _id: string };
 
 const EMPTY_FORM: CategoryInput = { name: "", order: 0 };
 

@@ -1,7 +1,9 @@
+import { ObjectId } from "mongodb";
+
 export type ProductCategory = "rank" | "item";
 
 export interface ProductDoc {
-  _id?: string;
+  _id?: ObjectId;
   category: ProductCategory;
   categoryId?: string; // "categories" koleksiyonuna referans (opsiyonel; eski
                         // kayitlarda olmayabilir, bu durumda sadece "category"
@@ -44,7 +46,7 @@ export interface ProductInput {
 }
 
 export interface CategoryDoc {
-  _id?: string;
+  _id?: ObjectId;
   name: string;
   order: number;
   createdAt: string;
@@ -62,7 +64,7 @@ export interface CategoryInput {
  * degisikligi icin "credit_requests" kuyrugu uzerinden istek dusurur.
  */
 export interface UserDoc {
-  _id?: string;
+  _id?: ObjectId;
   username: string; // Minecraft'taki orijinal (case-sensitive gorunum) hali
   username_lower: string; // kucuk harfli, arama icin
   password: string; // bcrypt hash (plugin tarafinda jBCrypt ile uretilir)
@@ -77,7 +79,7 @@ export interface UserDoc {
  * calistirma islemini plugin tarafindaki PurchaseProcessor yapar.
  */
 export interface PurchaseRequestDoc {
-  _id?: string;
+  _id?: ObjectId;
   username: string;
   productId: string;
   status: "pending" | "completed" | "failed";
@@ -92,7 +94,7 @@ export interface PurchaseRequestDoc {
  * gercek kredi guncellemesini plugin yapar.
  */
 export interface CreditRequestDoc {
-  _id?: string;
+  _id?: ObjectId;
   username: string;
   action: "add" | "subtract" | "set";
   amount: number;

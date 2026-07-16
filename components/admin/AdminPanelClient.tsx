@@ -11,7 +11,6 @@ import {
   LogOut,
   CreditCard,
   History,
-  ChevronRight,
   Ticket,
 } from "lucide-react";
 import { ProductsTab } from "./ProductsTab";
@@ -93,7 +92,7 @@ export function AdminPanelClient() {
 
 // Dashboard View
 function DashboardView() {
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<{ users: number; products: number } | null>(null);
 
   useState(() => {
     // Fetch summary stats

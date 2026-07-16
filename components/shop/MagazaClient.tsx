@@ -106,7 +106,7 @@ export function MagazaClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId }),
       });
-      const data = await res.json();
+      const data: { error?: string } = await res.json();
       if (!res.ok) {
         setPurchase({ status: "failed", productId, reason: data.error ?? "Bilinmeyen hata" });
         return;

@@ -8,7 +8,6 @@ import {
   Plus,
   Ticket,
   Clock,
-  MessageSquare,
   ArrowLeft,
   Loader2,
   AlertCircle,
@@ -57,6 +56,7 @@ export default function DestekPage() {
 
   useEffect(() => {
     load();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
 
   async function createTicket(e: React.FormEvent) {

@@ -13,7 +13,6 @@ import {
   ArrowLeft,
   Loader2,
   Ticket,
-  Clock,
 } from "lucide-react";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";

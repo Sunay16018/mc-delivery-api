@@ -50,6 +50,7 @@ export function Slot({
             <h3 className="font-display font-bold text-lg text-frost-100">{name}</h3>
           </div>
           {imageBase64 && (
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={imageBase64}
               alt={name}

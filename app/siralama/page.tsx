@@ -20,7 +20,7 @@ export default function SiralamaPage() {
     fetch("/api/admin/users")
       .then((r) => r.json())
       .then((d) => {
-        const users = (d.users ?? []).map((u: any) => ({
+        const users = (d.users ?? []).map((u: { username: string; credits?: number }) => ({
           username: u.username,
           credits: u.credits ?? 0,
         }));

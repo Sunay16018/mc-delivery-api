@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Menu, X, User, LogOut } from "lucide-react";
 
 const LINKS = [
   { href: "/magaza", label: "Mağaza" },
@@ -13,6 +13,31 @@ const LINKS = [
 
 export function Nav() {
   const [open, setOpen] = useState(false);
+  const [username, setUsername] = useState<string | null>(null);
+  const [checkedSession, setCheckedSession] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/user/me")
+      .then((res) => res.json())
+      .then((data) => {
+        if (cancelled) return;
+        setUsername(data.loggedIn ? data.username : null);
+        setCheckedSession(true);
+      })
+      .catch(() => {
+        if (!cancelled) setCheckedSession(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function handleLogout() {
+    await fetch("/api/user/logout", { method: "POST" });
+    setUsername(null);
+    window.location.href = "/";
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--stone-700)] bg-[var(--stone-950)]/90 backdrop-blur">
@@ -44,6 +69,25 @@ export function Nav() {
           >
             Discord&apos;a Katıl
           </a>
+          {checkedSession && (
+            username ? (
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-1.5 text-sm font-medium text-[var(--stone-400)] hover:text-[var(--redstone)] transition-colors"
+              >
+                <User size={15} className="text-[var(--emerald)]" />
+                {username}
+                <LogOut size={14} />
+              </button>
+            ) : (
+              <Link
+                href="/giris"
+                className="text-sm font-medium text-[var(--bone-200)] hover:text-[var(--emerald)] transition-colors"
+              >
+                Giriş yap
+              </Link>
+            )
+          )}
         </div>
 
         <button
@@ -75,6 +119,25 @@ export function Nav() {
           >
             Discord&apos;a Katıl
           </a>
+          {checkedSession && (
+            username ? (
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-1.5 text-sm font-medium text-[var(--stone-400)]"
+              >
+                <User size={15} className="text-[var(--emerald)]" />
+                {username} — Çıkış yap
+              </button>
+            ) : (
+              <Link
+                href="/giris"
+                onClick={() => setOpen(false)}
+                className="text-sm font-medium text-[var(--bone-200)]"
+              >
+                Giriş yap
+              </Link>
+            )
+          )}
         </div>
       )}
     </header>

@@ -15,16 +15,20 @@ export async function GET() {
     .sort({ category: 1, order: 1 })
     .toArray();
 
-  // Admin'e ozel alanlari (command sablonu gibi) disariya sizdirmiyoruz;
-  // sadece vitrin icin gereken alanlari donduruyoruz.
+  // Admin'e ozel alanlari (command/commands sablonu gibi) disariya
+  // sizdirmiyoruz; sadece vitrin icin gereken alanlari donduruyoruz.
   const publicProducts = products.map((p) => ({
     id: p._id?.toString(),
     category: p.category,
+    categoryId: p.categoryId ?? null,
     name: p.name,
     price: p.price,
+    priceCredits: p.priceCredits ?? 0,
     color: p.color,
     perks: p.perks,
     featured: p.featured,
+    imageBase64: p.imageBase64 ?? null,
+    description: p.description ?? "",
   }));
 
   return NextResponse.json({ products: publicProducts });

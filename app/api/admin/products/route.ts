@@ -5,6 +5,10 @@ import type { ProductDoc, ProductInput } from "@/lib/types";
 
 const COLLECTION = "products";
 
+// Base64 gorsel boyutu icin makul bir ust sinir (yaklasik 3MB ham veri).
+// MongoDB dokuman limiti 16MB oldugu icin bunun epey altinda tutuyoruz.
+const MAX_IMAGE_BASE64_LENGTH = 4_000_000;
+
 function validateInput(body: Partial<ProductInput>): string | null {
   if (!body.category || !["rank", "item"].includes(body.category)) {
     return "category alani 'rank' veya 'item' olmali.";
@@ -12,17 +16,28 @@ function validateInput(body: Partial<ProductInput>): string | null {
   if (!body.name || typeof body.name !== "string" || body.name.trim().length === 0) {
     return "name alani zorunlu.";
   }
-  if (!body.price || typeof body.price !== "string") {
-    return "price alani zorunlu.";
-  }
   if (!body.color || typeof body.color !== "string") {
     return "color alani zorunlu.";
   }
-  if (!body.command || typeof body.command !== "string") {
-    return "command alani zorunlu.";
+  if (
+    body.priceCredits === undefined ||
+    typeof body.priceCredits !== "number" ||
+    Number.isNaN(body.priceCredits) ||
+    body.priceCredits < 0
+  ) {
+    return "priceCredits alani 0 veya daha buyuk bir sayi olmali.";
+  }
+  if (!body.commands || !Array.isArray(body.commands) || body.commands.length === 0) {
+    return "commands alani en az bir komut icermeli.";
+  }
+  if (body.commands.some((c) => typeof c !== "string" || c.trim().length === 0)) {
+    return "commands dizisindeki her komut bos olmayan bir metin olmali.";
   }
   if (body.perks && !Array.isArray(body.perks)) {
     return "perks alani bir dizi olmali.";
+  }
+  if (body.imageBase64 && body.imageBase64.length > MAX_IMAGE_BASE64_LENGTH) {
+    return "Görsel çok büyük. Lütfen daha küçük bir görsel yükleyin.";
   }
   return null;
 }
@@ -62,14 +77,25 @@ export async function POST(request: NextRequest) {
   }
 
   const now = new Date().toISOString();
+  const commands = body.commands!.map((c) => c.trim());
+
   const doc: Omit<ProductDoc, "_id"> = {
     category: body.category!,
+    categoryId: body.categoryId ?? undefined,
     name: body.name!.trim(),
-    price: body.price!.trim(),
+    // "price" (gosterim metni) artik "priceCredits + kredi" seklinde
+    // otomatik uretilir; admin panelinde ayrica girilmesine gerek yok,
+    // ama eski entegrasyonlarla uyumluluk icin alan hala dolduruluyor.
+    price: `${body.priceCredits} kredi`,
+    priceCredits: body.priceCredits!,
     color: body.color!.trim(),
     perks: body.perks ?? [],
     featured: Boolean(body.featured),
-    command: body.command!.trim(),
+    // Geriye donuk uyumluluk icin ilk komutu "command" alanina da yaziyoruz.
+    command: commands[0],
+    commands,
+    imageBase64: body.imageBase64 ?? null,
+    description: body.description?.trim() ?? "",
     order: typeof body.order === "number" ? body.order : 0,
     createdAt: now,
     updatedAt: now,

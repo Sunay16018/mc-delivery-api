@@ -4,9 +4,6 @@ import { SignJWT, jwtVerify } from "jose";
 const ADMIN_COOKIE_NAME = "zc_admin_session";
 const SESSION_DURATION_SECONDS = 60 * 60 * 8; // 8 saat
 
-const USER_COOKIE_NAME = "zc_user_session";
-const USER_SESSION_DURATION_SECONDS = 60 * 60 * 24 * 7; // 7 gun
-
 function getSessionSecret(): Uint8Array {
   // Session imzalama icin SECRET_KEY'i temel alan ayri bir anahtar turetiyoruz
   // (SECRET_KEY'in kendisini JWT secret olarak dogrudan kullanmak yerine).
@@ -15,19 +12,6 @@ function getSessionSecret(): Uint8Array {
     throw new Error("SECRET_KEY ortam degiskeni tanimli degil.");
   }
   return new TextEncoder().encode(`zefircraft-admin-session:${secret}`);
-}
-
-/**
- * Kullanici (oyuncu) session'lari icin admin'den TAMAMEN AYRI bir anahtar
- * turetiyoruz. Boylece kullanici cookie'si asla admin paneline erisim
- * saglayamaz ve tam tersi de gecerlidir.
- */
-function getUserSessionSecret(): Uint8Array {
-  const secret = process.env.SECRET_KEY;
-  if (!secret) {
-    throw new Error("SECRET_KEY ortam degiskeni tanimli degil.");
-  }
-  return new TextEncoder().encode(`zefircraft-user-session:${secret}`);
 }
 
 /**
@@ -75,60 +59,6 @@ export async function isAdminRequest(request: NextRequest): Promise<boolean> {
 }
 
 export { ADMIN_COOKIE_NAME, SESSION_DURATION_SECONDS };
-
-// ---------------------------------------------------------------------------
-// Kullanici (oyuncu) oturumlari - mağaza girisi icin. Kayit SADECE oyun
-// icinden yapilir; bu sistem sadece giris dogrulama ve session yonetimi
-// icindir.
-// ---------------------------------------------------------------------------
-
-export interface UserSessionPayload {
-  role: "user";
-  username: string; // orijinal (case-sensitive gorunum) kullanici adi
-  usernameLower: string;
-}
-
-export async function createUserSessionToken(username: string, usernameLower: string): Promise<string> {
-  return await new SignJWT({ role: "user", username, usernameLower } satisfies UserSessionPayload)
-    .setProtectedHeader({ alg: "HS256" })
-    .setIssuedAt()
-    .setExpirationTime(`${USER_SESSION_DURATION_SECONDS}s`)
-    .sign(getUserSessionSecret());
-}
-
-/**
- * Cookie'deki kullanici oturum token'ini dogrular. Gecerliyse payload'i,
- * degilse null doner.
- */
-export async function verifyUserSessionToken(
-  token: string | undefined
-): Promise<UserSessionPayload | null> {
-  if (!token) return null;
-  try {
-    const { payload } = await jwtVerify(token, getUserSessionSecret());
-    if (payload.role !== "user" || typeof payload.username !== "string" || typeof payload.usernameLower !== "string") {
-      return null;
-    }
-    return {
-      role: "user",
-      username: payload.username,
-      usernameLower: payload.usernameLower,
-    };
-  } catch {
-    return null;
-  }
-}
-
-/**
- * Bir NextRequest icindeki kullanici oturum cookie'sini dogrular ve
- * gecerliyse payload'i (kullanici adi bilgisi) doner.
- */
-export async function getUserFromRequest(request: NextRequest): Promise<UserSessionPayload | null> {
-  const token = request.cookies.get(USER_COOKIE_NAME)?.value;
-  return verifyUserSessionToken(token);
-}
-
-export { USER_COOKIE_NAME, USER_SESSION_DURATION_SECONDS };
 
 /**
  * Gelen istegin "Authorization: Bearer <SECRET_KEY>" header'ini dogrular.

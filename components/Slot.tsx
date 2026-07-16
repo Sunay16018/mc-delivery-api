@@ -13,8 +13,8 @@ export function Slot({
 }) {
   return (
     <div
-      className={`card rounded-xl flex items-center justify-center shrink-0 ${
-        highlight ? "card-highlight" : ""
+      className={`slot pixel-corners flex items-center justify-center shrink-0 ${
+        highlight ? "slot-highlight" : ""
       } ${className}`}
       style={{ width: size, height: size }}
     >

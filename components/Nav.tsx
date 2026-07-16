@@ -12,7 +12,6 @@ import {
   User,
   Menu,
   X,
-  Coins,
 } from "lucide-react";
 
 const navLinks = [
@@ -82,6 +81,7 @@ export function Nav() {
                 href="/profil"
                 className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-ice-300/[0.05] border border-ice-300/10 hover:border-ice-300/20 transition-all"
               >
+            // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={`https://mc-heads.net/avatar/${user.username}/64`}
                   alt={user.username}

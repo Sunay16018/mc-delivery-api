@@ -232,7 +232,7 @@ function ProductPreview({
       {featured && (
         <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full opacity-[0.15] blur-xl pointer-events-none" style={{ background: color }} />
       )}
-      <div className="absolute top-0 left-4 right-4 h-px" style={{ background: color, opacity: 0.2 }} />
+      <div className="absolute top-0 left-4 right-4 h-px" style={{ background: color }} />
 
       <div className="relative">
         <div className="flex items-center justify-between mb-4">

@@ -1,5 +1,12 @@
 "use client";
 
+function hexToRgba(hex: string, alpha: number): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 import { ShoppingCart, Sparkles } from "lucide-react";
 
 interface SlotProps {
@@ -35,7 +42,7 @@ export function Slot({
 
       {/* Top accent line */}
       <div className="absolute top-0 left-4 right-4 h-px"
-        style={{ background: `linear-gradient(90deg, transparent, ${color}40, transparent)` }} />
+        style={{ background: `linear-gradient(90deg, transparent, ${hexToRgba(color, 0.25)}, transparent)` }} />
 
       <div className="relative">
         {/* Header */}
@@ -92,20 +99,20 @@ export function Slot({
             disabled={disabled}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             style={{
-              background: disabled ? "rgba(100,116,139,0.1)" : `${color}15`,
+              background: disabled ? "rgba(100,116,139,0.1)" : hexToRgba(color, 0.08),
               color: disabled ? "#64748B" : color,
-              border: `1px solid ${disabled ? "rgba(100,116,139,0.1)" : `${color}25`}`,
+              border: `1px solid ${disabled ? "rgba(100,116,139,0.1)" : hexToRgba(color, 0.15)}`,
             }}
             onMouseEnter={(e) => {
               if (!disabled) {
-                e.currentTarget.style.background = `${color}25`;
-                e.currentTarget.style.borderColor = `${color}40`;
+                e.currentTarget.style.background = hexToRgba(color, 0.15);
+                e.currentTarget.style.borderColor = hexToRgba(color, 0.25);
               }
             }}
             onMouseLeave={(e) => {
               if (!disabled) {
-                e.currentTarget.style.background = `${color}15`;
-                e.currentTarget.style.borderColor = `${color}25`;
+                e.currentTarget.style.background = hexToRgba(color, 0.08);
+                e.currentTarget.style.borderColor = hexToRgba(color, 0.15);
               }
             }}
           >

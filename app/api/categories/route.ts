@@ -9,16 +9,16 @@ export async function GET() {
   try {
     const db = await getDb();
     const categories = await db
-    .collection<CategoryDoc>("categories")
-    .find({})
-    .sort({ order: 1 })
-    .toArray();
+      .collection<CategoryDoc>("categories")
+      .find({})
+      .sort({ order: 1 })
+      .toArray();
 
     return NextResponse.json({
-    categories: categories.map((c) => ({ id: c._id?.toString(), name: c.name })),
+      categories: categories.map((c) => ({ id: c._id?.toString(), name: c.name })),
     });
   } catch (error) {
-    console.error("API error:", error);
-    return NextResponse.json({ error: "Sunucu hatası." }, { status: 500 });
+    console.error("GET /api/categories hata:", error);
+    return NextResponse.json({ categories: [], error: "Kategoriler yuklenemedi." }, { status: 500 });
   }
 }

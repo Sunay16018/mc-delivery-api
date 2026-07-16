@@ -1,18 +1,12 @@
 import { MongoClient, MongoClientOptions } from "mongodb";
 
-const uri = process.env.MONGODB_URI;
-const dbName = process.env.MONGODB_DB;
-
-if (!uri) {
-  throw new Error(
-    "MONGODB_URI ortam degiskeni tanimli degil. Vercel > Project Settings > Environment Variables kismindan ekleyin."
-  );
-}
-if (!dbName) {
-  throw new Error(
-    "MONGODB_DB ortam degiskeni tanimli degil. Vercel > Project Settings > Environment Variables kismindan ekleyin."
-  );
-}
+// NOT: MONGODB_URI / MONGODB_DB kontrolunu BURADA (modul yuklenirken) degil,
+// getDb() cagrildiginda yapiyoruz. Bu dosya build sirasinda (statik sayfa
+// derlemesi, tip kontrolu, vs.) veya env degiskenleri henuz mevcut degilken
+// import edilebilir; modul-seviyesinde throw atmak butun build'i veya
+// bu modulu (dolayli olarak) import eden her route'u cokertir.
+// Boylece hata sadece DB'ye gercekten erisilmeye calisildiginda olusur ve
+// duzgun bir JSON hata yaniti donmesine izin verilir.
 
 // Serverless ortamda (Vercel) her fonksiyon cagrisinda yeni baglanti
 // acilmasini onlemek icin client promise'ini global nesnede cache'liyoruz.
@@ -29,29 +23,33 @@ declare global {
   var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 
-let clientPromise: Promise<MongoClient>;
+function getClientPromise(): Promise<MongoClient> {
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    throw new Error(
+      "MONGODB_URI ortam degiskeni tanimli degil. Vercel > Project Settings > Environment Variables kismindan ekleyin."
+    );
+  }
 
-if (process.env.NODE_ENV === "development") {
   // Development'ta hot-reload ile modul her seferinde yeniden yuklenebilir,
-  // bu yuzden global'e yaziyoruz ki her reload'da yeni baglanti acilmasin.
+  // production'da (Vercel) da warm lambda instance'lar arasi tekrar
+  // kullanim icin global'e yaziyoruz.
   if (!global._mongoClientPromise) {
     const client = new MongoClient(uri, options);
     global._mongoClientPromise = client.connect();
   }
-  clientPromise = global._mongoClientPromise;
-} else {
-  // Production'da (Vercel) modul cache'i zaten warm instance icinde korunur,
-  // yine de ekstra guvenlik payi icin global kullaniyoruz.
-  if (!global._mongoClientPromise) {
-    const client = new MongoClient(uri, options);
-    global._mongoClientPromise = client.connect();
-  }
-  clientPromise = global._mongoClientPromise;
+  return global._mongoClientPromise;
 }
 
 export async function getDb() {
-  const client = await clientPromise;
+  const dbName = process.env.MONGODB_DB;
+  if (!dbName) {
+    throw new Error(
+      "MONGODB_DB ortam degiskeni tanimli degil. Vercel > Project Settings > Environment Variables kismindan ekleyin."
+    );
+  }
+  const client = await getClientPromise();
   return client.db(dbName);
 }
 
-export default clientPromise;
+export default getClientPromise;

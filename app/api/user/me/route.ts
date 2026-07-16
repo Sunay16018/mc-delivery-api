@@ -13,29 +13,31 @@ export const revalidate = 0;
  * polling ile cagirabilir.
  */
 export async function GET(request: NextRequest) {
-  try {
-    const session = await getUserFromRequest(request);
-    if (!session) {
+  const session = await getUserFromRequest(request);
+  if (!session) {
     return NextResponse.json({ loggedIn: false }, { status: 200 });
-    }
+  }
 
+  try {
     const db = await getDb();
     const user = await db
-    .collection<UserDoc>("users")
-    .findOne({ username_lower: session.usernameLower });
+      .collection<UserDoc>("users")
+      .findOne({ username_lower: session.usernameLower });
 
     if (!user) {
-    // Hesap oyun icinden silinmis olabilir; oturumu artik gecersiz sayalim.
-    return NextResponse.json({ loggedIn: false }, { status: 200 });
+      // Hesap oyun icinden silinmis olabilir; oturumu artik gecersiz sayalim.
+      return NextResponse.json({ loggedIn: false }, { status: 200 });
     }
 
     return NextResponse.json({
-    loggedIn: true,
-    username: user.username,
-    credits: user.credits,
+      loggedIn: true,
+      username: user.username,
+      credits: user.credits,
     });
   } catch (error) {
-    console.error("API error:", error);
-    return NextResponse.json({ error: "Sunucu hatası." }, { status: 500 });
+    console.error("GET /api/user/me hata:", error);
+    // DB'ye erisilemiyorsa bile Nav bileseni kirilmasin diye
+    // "loggedIn: false" ile devam ediyoruz.
+    return NextResponse.json({ loggedIn: false }, { status: 200 });
   }
 }

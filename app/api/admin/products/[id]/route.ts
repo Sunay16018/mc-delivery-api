@@ -5,12 +5,52 @@ import { isAdminRequest } from "@/lib/auth";
 import type { ProductDoc, ProductInput } from "@/lib/types";
 
 const COLLECTION = "products";
+
+// Base64 gorsel boyutu icin makul bir ust sinir (yaklasik 3MB ham veri).
+// MongoDB dokuman limiti 16MB oldugu icin bunun epey altinda tutuyoruz.
 const MAX_IMAGE_BASE64_LENGTH = 4_000_000;
 
 function isValidObjectId(id: string): boolean {
   return ObjectId.isValid(id);
 }
 
+function validateInput(body: Partial<ProductInput>): string | null {
+  if (!body.category || !["rank", "item"].includes(body.category)) {
+    return "category alani 'rank' veya 'item' olmali.";
+  }
+  if (!body.name || typeof body.name !== "string" || body.name.trim().length === 0) {
+    return "name alani zorunlu.";
+  }
+  if (!body.color || typeof body.color !== "string") {
+    return "color alani zorunlu.";
+  }
+  if (
+    body.priceCredits === undefined ||
+    typeof body.priceCredits !== "number" ||
+    Number.isNaN(body.priceCredits) ||
+    body.priceCredits < 0
+  ) {
+    return "priceCredits alani 0 veya daha buyuk bir sayi olmali.";
+  }
+  if (!body.commands || !Array.isArray(body.commands) || body.commands.length === 0) {
+    return "commands alani en az bir komut icermeli.";
+  }
+  if (body.commands.some((c) => typeof c !== "string" || c.trim().length === 0)) {
+    return "commands dizisindeki her komut bos olmayan bir metin olmali.";
+  }
+  if (body.perks && !Array.isArray(body.perks)) {
+    return "perks alani bir dizi olmali.";
+  }
+  if (body.imageBase64 && body.imageBase64.length > MAX_IMAGE_BASE64_LENGTH) {
+    return "Görsel çok büyük. Lütfen daha küçük bir görsel yükleyin.";
+  }
+  return null;
+}
+
+/**
+ * Var olan bir urunu gunceller. Admin panelindeki "ProductsTab" bileseni
+ * duzenleme kaydederken bu endpoint'i cagirir.
+ */
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -30,59 +70,51 @@ export async function PUT(
     return NextResponse.json({ error: "Gecersiz istek govdesi." }, { status: 400 });
   }
 
-  if (body.imageBase64 && body.imageBase64.length > MAX_IMAGE_BASE64_LENGTH) {
-    return NextResponse.json(
-      { error: "Görsel çok büyük. Lütfen daha küçük bir görsel yükleyin." },
-      { status: 400 }
-    );
+  const validationError = validateInput(body);
+  if (validationError) {
+    return NextResponse.json({ error: validationError }, { status: 400 });
   }
-  if (body.commands !== undefined) {
-    if (!Array.isArray(body.commands) || body.commands.length === 0) {
-      return NextResponse.json(
-        { error: "commands alani en az bir komut icermeli." },
-        { status: 400 }
-      );
+
+  const commands = body.commands!.map((c) => c.trim());
+
+  const update: Partial<ProductDoc> = {
+    category: body.category!,
+    categoryId: body.categoryId ?? undefined,
+    name: body.name!.trim(),
+    price: `${body.priceCredits} kredi`,
+    priceCredits: body.priceCredits!,
+    color: body.color!.trim(),
+    perks: body.perks ?? [],
+    featured: Boolean(body.featured),
+    command: commands[0],
+    commands,
+    imageBase64: body.imageBase64 ?? null,
+    description: body.description?.trim() ?? "",
+    order: typeof body.order === "number" ? body.order : 0,
+    updatedAt: new Date().toISOString(),
+  };
+
+  try {
+    const db = await getDb();
+    const result = await db
+      .collection(COLLECTION)
+      .updateOne({ _id: new ObjectId(params.id) }, { $set: update });
+
+    if (result.matchedCount === 0) {
+      return NextResponse.json({ error: "Urun bulunamadi." }, { status: 404 });
     }
-    if (body.commands.some((c) => typeof c !== "string" || c.trim().length === 0)) {
-      return NextResponse.json(
-        { error: "commands dizisindeki her komut bos olmayan bir metin olmali." },
-        { status: 400 }
-      );
-    }
-  }
 
-  const update: Partial<ProductDoc> = { updatedAt: new Date().toISOString() };
-  if (body.category !== undefined) update.category = body.category;
-  if (body.categoryId !== undefined) update.categoryId = body.categoryId;
-  if (body.name !== undefined) update.name = body.name.trim();
-  if (body.color !== undefined) update.color = body.color.trim();
-  if (body.perks !== undefined) update.perks = body.perks;
-  if (body.featured !== undefined) update.featured = Boolean(body.featured);
-  if (body.commands !== undefined) {
-    const commands = body.commands.map((c) => c.trim());
-    update.commands = commands;
-    update.command = commands[0]; // geriye donuk uyumluluk
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("PUT /api/admin/products/[id] hata:", error);
+    return NextResponse.json({ error: "Sunucu hatasi." }, { status: 500 });
   }
-  if (body.imageBase64 !== undefined) update.imageBase64 = body.imageBase64;
-  if (body.description !== undefined) update.description = body.description.trim();
-  if (body.order !== undefined) update.order = body.order;
-  if (body.priceCredits !== undefined) {
-    update.priceCredits = body.priceCredits;
-    update.price = `${body.priceCredits} kredi`;
-  }
-
-  const db = await getDb();
-  const result = await db
-    .collection(COLLECTION)
-    .updateOne({ _id: new ObjectId(params.id) }, { $set: update });
-
-  if (result.matchedCount === 0) {
-    return NextResponse.json({ error: "Urun bulunamadi." }, { status: 404 });
-  }
-
-  return NextResponse.json({ ok: true });
 }
 
+/**
+ * Bir urunu siler. Admin panelindeki "ProductsTab" bileseni silme
+ * butonuna basildiginda bu endpoint'i cagirir.
+ */
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -95,14 +127,19 @@ export async function DELETE(
     return NextResponse.json({ error: "Gecersiz urun id." }, { status: 400 });
   }
 
-  const db = await getDb();
-  const result = await db
-    .collection(COLLECTION)
-    .deleteOne({ _id: new ObjectId(params.id) });
+  try {
+    const db = await getDb();
+    const result = await db
+      .collection(COLLECTION)
+      .deleteOne({ _id: new ObjectId(params.id) });
 
-  if (result.deletedCount === 0) {
-    return NextResponse.json({ error: "Urun bulunamadi." }, { status: 404 });
+    if (result.deletedCount === 0) {
+      return NextResponse.json({ error: "Urun bulunamadi." }, { status: 404 });
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("DELETE /api/admin/products/[id] hata:", error);
+    return NextResponse.json({ error: "Sunucu hatasi." }, { status: 500 });
   }
-
-  return NextResponse.json({ ok: true });
 }

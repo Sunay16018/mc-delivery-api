@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   LayoutDashboard,
@@ -94,7 +94,7 @@ export function AdminPanelClient() {
 function DashboardView() {
   const [stats, setStats] = useState<{ users: number; products: number } | null>(null);
 
-  useState(() => {
+  useEffect(() => {
     // Fetch summary stats
     Promise.all([
       fetch("/api/admin/users").then((r) => r.json()),
@@ -105,7 +105,7 @@ function DashboardView() {
         products: productsData.products?.length ?? 0,
       });
     }).catch(() => setStats({ users: 0, products: 0 }));
-  });
+  }, []);
 
   return (
     <div>

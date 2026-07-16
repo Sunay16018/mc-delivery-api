@@ -5,9 +5,8 @@ import { Users, Wifi, WifiOff } from "lucide-react";
 
 interface StatusData {
   online: boolean;
-  players: number;
-  maxPlayers: number;
-  version?: string;
+  players: { online: number; max: number };
+  version?: string | null;
 }
 
 export function ServerStatusWidget() {
@@ -18,7 +17,7 @@ export function ServerStatusWidget() {
     fetch("/api/server-status")
       .then((r) => r.json())
       .then((d) => setStatus(d))
-      .catch(() => setStatus({ online: false, players: 0, maxPlayers: 0 }))
+      .catch(() => setStatus({ online: false, players: { online: 0, max: 0 } }))
       .finally(() => setLoading(false));
   }, []);
 
@@ -32,8 +31,8 @@ export function ServerStatusWidget() {
   }
 
   const isOnline = status?.online ?? false;
-  const players = status?.players ?? 0;
-  const maxPlayers = status?.maxPlayers ?? 0;
+  const players = status?.players?.online ?? 0;
+  const maxPlayers = status?.players?.max ?? 0;
 
   return (
     <div className="card-surface p-6 w-full max-w-sm relative overflow-hidden">

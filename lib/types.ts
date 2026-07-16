@@ -102,3 +102,22 @@ export interface CreditRequestDoc {
   createdAt: string | Date;
   processedAt: string | Date | null;
 }
+
+
+// Support Ticket Types
+export interface SupportTicketDoc {
+  _id?: string;
+  username: string;
+  subject: string;
+  category: string;
+  messages: SupportTicketMessage[];
+  status: "open" | "replied" | "closed";
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SupportTicketMessage {
+  sender: string;
+  text: string;
+  createdAt: string;
+}

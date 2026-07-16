@@ -17,7 +17,7 @@ export default function SiralamaPage() {
   const [sortBy, setSortBy] = useState<"credits" | "username">("credits");
 
   useEffect(() => {
-    fetch("/api/admin/users")
+    fetch("/api/leaderboard")
       .then((r) => r.json())
       .then((d) => {
         const users = (d.users ?? []).map((u: { username: string; credits?: number }) => ({

@@ -11,30 +11,30 @@ export async function GET() {
   try {
     const db = await getDb();
     const products = await db
-    .collection<ProductDoc>(COLLECTION)
-    .find({})
-    .sort({ category: 1, order: 1 })
-    .toArray();
+      .collection<ProductDoc>(COLLECTION)
+      .find({})
+      .sort({ category: 1, order: 1 })
+      .toArray();
 
     // Admin'e ozel alanlari (command/commands sablonu gibi) disariya
     // sizdirmiyoruz; sadece vitrin icin gereken alanlari donduruyoruz.
     const publicProducts = products.map((p) => ({
-    id: p._id?.toString(),
-    category: p.category,
-    categoryId: p.categoryId ?? null,
-    name: p.name,
-    price: p.price,
-    priceCredits: p.priceCredits ?? 0,
-    color: p.color,
-    perks: p.perks,
-    featured: p.featured,
-    imageBase64: p.imageBase64 ?? null,
-    description: p.description ?? "",
+      id: p._id?.toString(),
+      category: p.category,
+      categoryId: p.categoryId ?? null,
+      name: p.name,
+      price: p.price,
+      priceCredits: p.priceCredits ?? 0,
+      color: p.color,
+      perks: p.perks,
+      featured: p.featured,
+      imageBase64: p.imageBase64 ?? null,
+      description: p.description ?? "",
     }));
 
     return NextResponse.json({ products: publicProducts });
   } catch (error) {
-    console.error("API error:", error);
-    return NextResponse.json({ error: "Sunucu hatası." }, { status: 500 });
+    console.error("GET /api/products hata:", error);
+    return NextResponse.json({ products: [], error: "Urunler yuklenemedi." }, { status: 500 });
   }
 }

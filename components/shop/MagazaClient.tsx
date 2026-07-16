@@ -173,9 +173,7 @@ export function MagazaClient() {
             </span>
           )}
           {purchase.status === "failed" && (
-            <span className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium">
-              {(purchase as any).reason ?? "Satın alma başarısız"}
-            </span>
+            <FailedPurchaseMessage purchase={purchase} />
           )}
         </div>
 
@@ -285,5 +283,13 @@ export function MagazaClient() {
 
       <Footer />
     </>
+  );
+}
+
+function FailedPurchaseMessage({ purchase }: { purchase: { status: "failed"; productId: string; reason: string | null } }) {
+  return (
+    <span className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium">
+      {purchase.reason ?? "Satın alma başarısız"}
+    </span>
   );
 }

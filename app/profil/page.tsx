@@ -71,7 +71,6 @@ export default function ProfilPage() {
         <div className="card-surface p-6 mb-6 relative overflow-hidden">
           <div className="absolute -top-16 -right-16 w-32 h-32 bg-ice-300/[0.05] rounded-full blur-3xl pointer-events-none" />
           <div className="relative flex items-center gap-5">
-            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={`https://mc-heads.net/avatar/${user.username}/128`}
               alt={user.username}

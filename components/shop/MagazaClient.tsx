@@ -106,12 +106,21 @@ export function MagazaClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ productId }),
       });
-      const data: { error?: string } = await res.json();
+
+      interface PurchaseSuccessResponse {
+        requestId: string;
+      }
+      interface PurchaseErrorResponse {
+        error: string;
+      }
+      type PurchaseResponse = PurchaseSuccessResponse | PurchaseErrorResponse;
+
+      const data: PurchaseResponse = await res.json();
       if (!res.ok) {
-        setPurchase({ status: "failed", productId, reason: data.error ?? "Bilinmeyen hata" });
+        setPurchase({ status: "failed", productId, reason: (data as PurchaseErrorResponse).error ?? "Bilinmeyen hata" });
         return;
       }
-      setPurchase({ status: "pending", requestId: data.requestId, productId });
+      setPurchase({ status: "pending", requestId: (data as PurchaseSuccessResponse).requestId, productId });
     } catch {
       setPurchase({ status: "failed", productId, reason: "Bağlantı hatası" });
     }

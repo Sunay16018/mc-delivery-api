@@ -46,7 +46,7 @@ export default function Home() {
               </div>
 
               {/* Server IP box */}
-              <div className="mt-8 inline-flex items-center gap-3 px-4 py-2.5 rounded-xl bg-ice-300/5 border border-ice-300/10">
+              <div className="mt-8 inline-flex items-center gap-3 px-4 py-2.5 rounded-xl bg-ice-300/[0.05] border border-ice-300/10">
                 <Globe size={14} className="text-ice-300" />
                 <span className="text-frost-400 text-sm font-mono">zefircraft.mcsh.io</span>
                 <span className="w-px h-4 bg-ice-300/10" />
@@ -249,7 +249,7 @@ function ProductPreview({
           ))}
         </ul>
 
-        <div className="flex items-center justify-between pt-4 border-t border-ice-300/5">
+        <div className="flex items-center justify-between pt-4 border-t border-ice-300/[0.05]">
           <div className="flex items-baseline gap-1">
             <span className="font-display font-bold text-2xl" style={{ color }}>{price}</span>
             <span className="text-frost-500 text-xs">kredi</span>

@@ -77,7 +77,7 @@ export function Slot({
         )}
 
         {/* Price + CTA */}
-        <div className="flex items-center justify-between pt-4 border-t border-ice-300/5">
+        <div className="flex items-center justify-between pt-4 border-t border-ice-300/[0.05]">
           <div>
             <span className="text-frost-600 text-[10px] uppercase tracking-wider font-medium">Fiyat</span>
             <div className="flex items-center gap-1.5">

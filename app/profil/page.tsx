@@ -69,7 +69,7 @@ export default function ProfilPage() {
 
         {/* Profile Header */}
         <div className="card-surface p-6 mb-6 relative overflow-hidden">
-          <div className="absolute -top-16 -right-16 w-32 h-32 bg-ice-300/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -top-16 -right-16 w-32 h-32 bg-ice-300/[0.05] rounded-full blur-3xl pointer-events-none" />
           <div className="relative flex items-center gap-5">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-ice-300 to-ice-500 flex items-center justify-center shadow-glow">
               <User size={28} className="text-ice-950" />
@@ -97,7 +97,7 @@ export default function ProfilPage() {
           {/* Store History */}
           <div className="card-surface p-5">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-ice-300/8 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-ice-300/[0.08] flex items-center justify-center">
                 <ShoppingBag size={18} className="text-ice-300" />
               </div>
               <div>
@@ -114,7 +114,7 @@ export default function ProfilPage() {
           {/* Credit History */}
           <div className="card-surface p-5">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-ice-300/8 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-ice-300/[0.08] flex items-center justify-center">
                 <CreditCard size={18} className="text-ice-300" />
               </div>
               <div>
@@ -131,7 +131,7 @@ export default function ProfilPage() {
           {/* Support Tickets */}
           <div className="card-surface p-5">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-ice-300/8 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-ice-300/[0.08] flex items-center justify-center">
                 <Ticket size={18} className="text-ice-300" />
               </div>
               <div>

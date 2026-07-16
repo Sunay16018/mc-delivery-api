@@ -41,7 +41,7 @@ export default function KurallarPage() {
         <div className="space-y-3">
           {rules.map((rule, i) => (
             <div key={i} className="card-surface p-5 flex items-start gap-4">
-              <div className="w-9 h-9 rounded-xl bg-ice-300/8 flex items-center justify-center text-ice-300 shrink-0 mt-0.5">
+              <div className="w-9 h-9 rounded-xl bg-ice-300/[0.08] flex items-center justify-center text-ice-300 shrink-0 mt-0.5">
                 {rule.icon}
               </div>
               <div>
@@ -54,7 +54,7 @@ export default function KurallarPage() {
           ))}
         </div>
 
-        <div className="mt-10 p-5 rounded-2xl bg-amber-500/5 border border-amber-500/10">
+        <div className="mt-10 p-5 rounded-2xl bg-amber-500/[0.05] border border-amber-500/10">
           <p className="text-amber-400/80 text-sm">
             <strong className="text-amber-400">Not:</strong> Kuralları ihlal eden oyuncular
             yetkili ekibimiz tarafından uyarı, geçici ban veya kalıcı ban cezaları alabilir.

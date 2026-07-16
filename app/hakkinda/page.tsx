@@ -34,7 +34,7 @@ export default function HakkindaPage() {
             { icon: <Globe size={20} />, title: "7/24 Açık", desc: "Kesintisiz oyun deneyimi." },
           ].map((item, i) => (
             <div key={i} className="card-surface p-5">
-              <div className="w-10 h-10 rounded-xl bg-ice-300/8 flex items-center justify-center text-ice-300 mb-3">
+              <div className="w-10 h-10 rounded-xl bg-ice-300/[0.08] flex items-center justify-center text-ice-300 mb-3">
                 {item.icon}
               </div>
               <h3 className="font-semibold text-frost-200 text-sm mb-1">{item.title}</h3>

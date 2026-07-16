@@ -64,8 +64,8 @@ export function Nav() {
                   href={link.href}
                   className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-medium transition-all ${
                     isActive
-                      ? "text-ice-100 bg-ice-300/8"
-                      : "text-frost-500 hover:text-ice-100 hover:bg-ice-300/5"
+                      ? "text-ice-100 bg-ice-300/[0.08]"
+                      : "text-frost-500 hover:text-ice-100 hover:bg-ice-300/[0.05]"
                   }`}
                 >
                   <Icon size={16} strokeWidth={isActive ? 2.5 : 2} />
@@ -80,7 +80,7 @@ export function Nav() {
             {user ? (
               <Link
                 href="/profil"
-                className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-ice-300/5 border border-ice-300/10 hover:border-ice-300/20 transition-all"
+                className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-ice-300/[0.05] border border-ice-300/10 hover:border-ice-300/20 transition-all"
               >
                 <div className="w-7 h-7 rounded-full bg-gradient-to-br from-ice-300 to-ice-500 flex items-center justify-center">
                   <User size={13} className="text-ice-950" />
@@ -105,7 +105,7 @@ export function Nav() {
             {/* Mobile menu toggle */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 rounded-xl text-frost-400 hover:text-frost-200 hover:bg-ice-300/5 transition-all"
+              className="md:hidden p-2 rounded-xl text-frost-400 hover:text-frost-200 hover:bg-ice-300/[0.05] transition-all"
             >
               {mobileOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -127,8 +127,8 @@ export function Nav() {
                   onClick={() => setMobileOpen(false)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                     isActive
-                      ? "text-ice-100 bg-ice-300/8"
-                      : "text-frost-500 hover:text-ice-100 hover:bg-ice-300/5"
+                      ? "text-ice-100 bg-ice-300/[0.08]"
+                      : "text-frost-500 hover:text-ice-100 hover:bg-ice-300/[0.05]"
                   }`}
                 >
                   <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />

@@ -53,7 +53,7 @@ export default function GirisPage() {
 
           <div className="card-surface p-8 relative overflow-hidden">
             {/* Glow */}
-            <div className="absolute -top-20 -right-20 w-40 h-40 bg-ice-300/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-ice-300/[0.05] rounded-full blur-3xl pointer-events-none" />
 
             <div className="relative">
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-ice-300 to-ice-500 flex items-center justify-center mb-6 shadow-glow-sm">
@@ -68,7 +68,7 @@ export default function GirisPage() {
               </p>
 
               {error && (
-                <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-red-500/8 border border-red-500/15 text-red-400 text-sm mb-6">
+                <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-red-500/[0.08] border border-red-500/15 text-red-400 text-sm mb-6">
                   <AlertCircle size={16} />
                   {error}
                 </div>

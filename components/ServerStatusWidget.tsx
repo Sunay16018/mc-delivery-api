@@ -38,7 +38,7 @@ export function ServerStatusWidget() {
   return (
     <div className="card-surface p-6 w-full max-w-sm relative overflow-hidden">
       {/* Subtle glow */}
-      <div className="absolute -top-20 -right-20 w-40 h-40 bg-ice-300/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -top-20 -right-20 w-40 h-40 bg-ice-300/[0.05] rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative">
         <div className="flex items-center gap-3 mb-4">
@@ -65,7 +65,7 @@ export function ServerStatusWidget() {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex-1 bg-frost-900/50 rounded-xl p-3 border border-ice-300/5">
+          <div className="flex-1 bg-frost-900/50 rounded-xl p-3 border border-ice-300/[0.05]">
             <div className="flex items-center gap-2 mb-1">
               <Users size={14} className="text-ice-300" />
               <span className="text-frost-500 text-xs font-medium">Oyuncular</span>
@@ -80,7 +80,7 @@ export function ServerStatusWidget() {
             onClick={() => {
               navigator.clipboard.writeText("zefircraft.mcsh.io");
             }}
-            className="px-4 py-3 rounded-xl bg-ice-300/5 border border-ice-300/10 text-ice-300 text-xs font-semibold hover:bg-ice-300/10 hover:border-ice-300/20 transition-all"
+            className="px-4 py-3 rounded-xl bg-ice-300/[0.05] border border-ice-300/10 text-ice-300 text-xs font-semibold hover:bg-ice-300/10 hover:border-ice-300/20 transition-all"
           >
             Kopyala
           </button>

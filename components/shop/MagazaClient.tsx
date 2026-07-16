@@ -153,7 +153,7 @@ export function MagazaClient() {
         {/* User bar */}
         <div className="flex flex-wrap items-center gap-3 mb-10">
           {sessionChecked && username ? (
-            <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-ice-300/5 border border-ice-300/10">
+            <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-ice-300/[0.05] border border-ice-300/10">
               <Coins size={16} className="text-ice-300" />
               <span className="text-frost-200 text-sm font-semibold">{username}</span>
               <span className="w-px h-4 bg-ice-300/10" />
@@ -162,7 +162,7 @@ export function MagazaClient() {
           ) : (
             <Link
               href="/giris"
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-ice-300/5 border border-ice-300/10 text-frost-400 text-sm font-medium hover:text-ice-300 hover:border-ice-300/20 transition-all"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-ice-300/[0.05] border border-ice-300/10 text-frost-400 text-sm font-medium hover:text-ice-300 hover:border-ice-300/20 transition-all"
             >
               <LogIn size={15} />
               Satın almak için giriş yap
@@ -176,7 +176,7 @@ export function MagazaClient() {
             </span>
           )}
           {purchase.status === "pending" && (
-            <span className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-ice-300/5 border border-ice-300/10 text-ice-300 text-sm font-medium">
+            <span className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-ice-300/[0.05] border border-ice-300/10 text-ice-300 text-sm font-medium">
               <Loader2 size={15} className="animate-spin" />
               İşleniyor...
             </span>
@@ -194,7 +194,7 @@ export function MagazaClient() {
               className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                 activeCategory === "all"
                   ? "bg-ice-300/10 text-ice-100 border border-ice-300/20"
-                  : "bg-frost-900/50 text-frost-500 border border-transparent hover:bg-ice-300/5 hover:text-frost-300"
+                  : "bg-frost-900/50 text-frost-500 border border-transparent hover:bg-ice-300/[0.05] hover:text-frost-300"
               }`}
             >
               Tümü
@@ -206,7 +206,7 @@ export function MagazaClient() {
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                   activeCategory === cat.id
                     ? "bg-ice-300/10 text-ice-100 border border-ice-300/20"
-                    : "bg-frost-900/50 text-frost-500 border border-transparent hover:bg-ice-300/5 hover:text-frost-300"
+                    : "bg-frost-900/50 text-frost-500 border border-transparent hover:bg-ice-300/[0.05] hover:text-frost-300"
                 }`}
               >
                 {cat.name}

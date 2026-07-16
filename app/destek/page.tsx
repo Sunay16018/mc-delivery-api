@@ -134,7 +134,7 @@ export default function DestekPage() {
           <div className="card-surface p-6 mb-8">
             <h3 className="font-semibold text-frost-200 mb-4">Yeni Ticket Oluştur</h3>
             {error && (
-              <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-500/8 border border-red-500/15 text-red-400 text-sm mb-4">
+              <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-500/[0.08] border border-red-500/15 text-red-400 text-sm mb-4">
                 <AlertCircle size={15} /> {error}
               </div>
             )}
@@ -207,7 +207,7 @@ export default function DestekPage() {
           <div className="space-y-2">
             {tickets.map((t) => (
               <div key={t._id} className="ticket-row">
-                <div className="w-9 h-9 rounded-xl bg-ice-300/8 flex items-center justify-center shrink-0">
+                <div className="w-9 h-9 rounded-xl bg-ice-300/[0.08] flex items-center justify-center shrink-0">
                   <Ticket size={16} className="text-ice-300" />
                 </div>
                 <div className="flex-1 min-w-0">

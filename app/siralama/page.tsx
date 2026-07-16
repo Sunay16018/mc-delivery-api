@@ -84,8 +84,8 @@ export default function SiralamaPage() {
                 key={entry.username}
                 className={`flex items-center gap-4 px-5 py-4 rounded-2xl border transition-all ${
                   i < 3
-                    ? "bg-gradient-to-r from-ice-300/[0.03] to-transparent border-ice-300/8"
-                    : "bg-frost-900/20 border-ice-300/[0.03] hover:border-ice-300/6"
+                    ? "bg-gradient-to-r from-ice-300/[0.03] to-transparent border-ice-300/[0.08]"
+                    : "bg-frost-900/20 border-ice-300/[0.03] hover:border-ice-300/[0.06]"
                 }`}
               >
                 <div className="w-8 flex justify-center">{rankIcon(i)}</div>

@@ -104,3 +104,19 @@ body {
     animation: none;
   }
 }
+
+.input-field {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.125rem;
+  background: var(--stone-800);
+  border: 1px solid var(--stone-700);
+  color: var(--bone-100);
+  font-size: 0.875rem;
+  transition: border-color 0.15s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--emerald);
+}

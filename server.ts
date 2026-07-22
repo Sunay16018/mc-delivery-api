@@ -911,7 +911,7 @@ app.post("/api/admin/execute-command", authenticateAdmin, checkPermission("conso
   } else {
     // Treat as regular chat message, broadcast via Minecraft tellraw command in beautiful cold-ice RGB tones
     const escapedMessage = rawInput.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
-    finalCommand = `tellraw @a [{"text":"[","color":"#7dd3fc"},{"text":"Zefir Craft","color":"#0ea5e9","bold":true},{"text":"] ","color":"#7dd3fc"},{"text":"${escapedMessage}","color":"#f0f9ff"}]`;
+    finalCommand = `tellraw @a [{"text":"[","color":"#ff3333"},{"text":"Zefir Craft","color":"#0ea5e9","bold":true},{"text":"] ","color":"#7dd3fc"},{"text":"${escapedMessage}","color":"#f0f9ff"}]`;
   }
 
   try {

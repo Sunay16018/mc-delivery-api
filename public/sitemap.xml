@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Ana Sayfa (Home Page) -->
+  <url>
+    <loc>https://zefircraft.mcsh.io/#home</loc>
+    <lastmod>2026-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <!-- Mağaza (Store) -->
+  <url>
+    <loc>https://zefircraft.mcsh.io/#store</loc>
+    <lastmod>2026-07-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <!-- Web Sandığı (Web Chest) -->
+  <url>
+    <loc>https://zefircraft.mcsh.io/#chest</loc>
+    <lastmod>2026-07-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <!-- Çarkıfelek (Wheel) -->
+  <url>
+    <loc>https://zefircraft.mcsh.io/#wheel</loc>
+    <lastmod>2026-07-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <!-- Sıralama (Rankings) -->
+  <url>
+    <loc>https://zefircraft.mcsh.io/#rankings</loc>
+    <lastmod>2026-07-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <!-- Destek (Support) -->
+  <url>
+    <loc>https://zefircraft.mcsh.io/#support</loc>
+    <lastmod>2026-07-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <!-- Kurallar (Rules) -->
+  <url>
+    <loc>https://zefircraft.mcsh.io/#rules</loc>
+    <lastmod>2026-07-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <!-- Başvuru (Apply) -->
+  <url>
+    <loc>https://zefircraft.mcsh.io/#apply</loc>
+    <lastmod>2026-07-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+</urlset>

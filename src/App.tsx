@@ -33,6 +33,108 @@ export default function App() {
 
   const serverIP = "zefircraft.mcsh.io";
 
+  // Sync page state with URL hash for search engine indexing and direct linking (Sitelinks)
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace("#", "");
+      const validPages = ["home", "store", "chest", "wheel", "rankings", "support", "rules", "apply", "login", "admin", "profile"];
+      if (hash && validPages.includes(hash)) {
+        setCurrentPage(hash);
+      }
+    };
+
+    // Initial check on load
+    handleHashChange();
+
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
+
+  // Update hash when page changes (supports Sitelinks crawling)
+  useEffect(() => {
+    if (currentPage) {
+      const currentHash = window.location.hash.replace("#", "");
+      if (currentHash !== currentPage) {
+        window.history.pushState(null, "", `#${currentPage}`);
+      }
+    }
+  }, [currentPage]);
+
+  // Dynamic page-specific SEO Title and Meta Description updater
+  useEffect(() => {
+    if (!currentPage) return;
+
+    const seoMetadata: Record<string, { title: string; desc: string }> = {
+      home: {
+        title: "ZefirCraft | Towny Sunucusu Resmi Web Sitesi",
+        desc: "ZefirCraft Minecraft Towny sunucusunun resmi web sitesidir. Türkiye'nin en gelişmiş, dengeli ekonomiye sahip Minecraft Towny sunucusunda hemen oynamaya başla!"
+      },
+      store: {
+        title: "ZefirCraft Mağaza | VIP, Kredi ve Sunucu Market Ürünleri",
+        desc: "ZefirCraft Minecraft Towny sunucu mağazası. VIP üyelikler, kredi yüklemeleri ve özel oyun içi avantajları güvenli ödeme ile satın al!"
+      },
+      chest: {
+        title: "ZefirCraft Web Sandığı | Oyun İçi Eşya Deposu",
+        desc: "ZefirCraft web sandığı sistemiyle kazandığın veya satın aldığın eşyaları güvenli bir şekilde görüntüle ve oyun içine aktar!"
+      },
+      wheel: {
+        title: "ZefirCraft Şans Çarkıfeleği | Günlük Çarkı Çevir Kazan",
+        desc: "ZefirCraft şans çarkıfeleğini çevirerek her gün ücretsiz sürpriz hediyeler, krediler ve değerli oyun içi ödüller kazanma şansı yakala!"
+      },
+      rankings: {
+        title: "ZefirCraft Oyuncu Sıralamaları | En Güçlü Kasabalar ve Oyuncular",
+        desc: "ZefirCraft Towny sunucusunun en iyi oyuncuları, en zengin kasabaları, en yüksek seviyeli milletleri ve liderlik tablolarını gör!"
+      },
+      support: {
+        title: "ZefirCraft Destek Merkezi | Yardım ve Destek Talebi Oluştur",
+        desc: "ZefirCraft destek sistemi üzerinden karşılaştığın sorunlar hakkında anında yardım al ve yetkililere destek talebi gönder!"
+      },
+      rules: {
+        title: "ZefirCraft Kurallar | Towny Sunucu Kuralları ve Sözleşmeler",
+        desc: "ZefirCraft Minecraft Towny sunucusunda geçerli olan genel kurallar, kasaba kuralları, sözleşmeler ve adil oyun ilkeleri."
+      },
+      apply: {
+        title: "ZefirCraft Başvuru | Yetkili ve Ekip Alımları Formu",
+        desc: "ZefirCraft yetkili ekibine katılmak için hemen başvuruda bulun. Moderatör, Rehber ve Mimar alımları için formu doldur!"
+      },
+      login: {
+        title: "ZefirCraft Giriş Yap | Oyuncu Portalı ve Kayıt",
+        desc: "ZefirCraft web sitesine giriş yap veya kayıt ol. Web sandığı, mağaza, destek ve profil özelliklerine hemen eriş!"
+      },
+      profile: {
+        title: "ZefirCraft Profil | Oyuncu Bilgileri ve İstatistikleri",
+        desc: "ZefirCraft oyuncu profilini görüntüle. Sahip olduğun krediler, kayıt tarihi, web sandığın ve kişisel istatistiklerini takip et!"
+      },
+      admin: {
+        title: "ZefirCraft Yönetici Paneli | Sunucu Yönetim Sistemi",
+        desc: "ZefirCraft sunucu yöneticileri için yönetim paneli. Ürün ekle, talepleri gör ve sunucu ayarlarını yönet!"
+      }
+    };
+
+    const currentMeta = seoMetadata[currentPage] || seoMetadata.home;
+
+    // Update Page Title
+    document.title = currentMeta.title;
+
+    // Helper to update or create meta tags
+    const updateMetaTag = (nameAttr: string, valueAttr: string, content: string) => {
+      let element = document.querySelector(`meta[${nameAttr}="${valueAttr}"]`);
+      if (!element) {
+        element = document.createElement("meta");
+        element.setAttribute(nameAttr, valueAttr);
+        document.head.appendChild(element);
+      }
+      element.setAttribute("content", content);
+    };
+
+    // Update description, open graph, and twitter meta tags
+    updateMetaTag("name", "description", currentMeta.desc);
+    updateMetaTag("property", "og:title", currentMeta.title);
+    updateMetaTag("property", "og:description", currentMeta.desc);
+    updateMetaTag("name", "twitter:title", currentMeta.title);
+    updateMetaTag("name", "twitter:description", currentMeta.desc);
+  }, [currentPage]);
+
   // Elegant page preloader transition helper
   const changePageWithLoader = (newPage: string) => {
     setPageLoading(true);
@@ -268,9 +370,13 @@ export default function App() {
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center gap-1">
             {activeNavItems.map((item) => (
-              <button
+              <a
                 key={item.id}
-                onClick={() => changePageWithLoader(item.id)}
+                href={`#${item.id}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  changePageWithLoader(item.id);
+                }}
                 className={`px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 cursor-pointer transition-all ${
                   currentPage === item.id
                     ? "bg-sky-600/20 text-sky-400 border border-sky-500/40 shadow-md shadow-sky-950/40"
@@ -279,7 +385,7 @@ export default function App() {
               >
                 {item.icon}
                 {item.label}
-              </button>
+              </a>
             ))}
           </nav>
 
@@ -418,9 +524,14 @@ export default function App() {
                 {/* Navigation links */}
                 <div className="space-y-1.5 flex flex-col overflow-y-auto max-h-[calc(100vh-260px)] pr-1 scrollbar-thin">
                   {activeNavItems.map((item) => (
-                    <button
+                    <a
                       key={item.id}
-                      onClick={() => changePageWithLoader(item.id)}
+                      href={`#${item.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        changePageWithLoader(item.id);
+                        setMobileMenuOpen(false);
+                      }}
                       className={`w-full text-left px-4 py-3 rounded-xl text-xs font-bold flex items-center gap-3 transition-all cursor-pointer ${
                         currentPage === item.id
                           ? "bg-gradient-to-r from-sky-500/15 to-sky-500/5 text-sky-300 border-l-2 border-sky-400 pl-3.5"
@@ -431,7 +542,7 @@ export default function App() {
                         {item.icon}
                       </div>
                       {item.label}
-                    </button>
+                    </a>
                   ))}
                 </div>
               </div>

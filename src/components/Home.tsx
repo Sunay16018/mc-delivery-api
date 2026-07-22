@@ -478,10 +478,9 @@ export default function Home({ onNavigate }: HomeProps) {
                       </h3>
 
                       <p className="text-xs md:text-sm text-red-500 whitespace-pre-line leading-relaxed">
-  {selectedArticle.content}
-</p>
-
-                    </div>
+                      {selectedArticle.content}
+                      </p>
+                      </div>
 
                     <div className="flex items-center justify-between pt-3 border-t border-[#1e2a44]/50">
                       <button

@@ -460,18 +460,21 @@ export default function Home({ onNavigate }: HomeProps) {
                   </div>
 
                   {/* content */}
-                  <div className="p-6 flex-1 flex flex-col justify-between gap-4">
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-4 text-[10px] text-slate-500 font-extrabold">
-                        <span className="flex items-center gap-1.5">
-                          <Calendar className="w-3.5 h-3.5 text-sky-400" />
-                          {formatTime(art.createdAt)}
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                          <Eye className="w-3.5 h-3.5 text-sky-400" />
-                          {art.views || 42} Görüntülenme
-                        </span>
-                      </div>
+<div className="p-6 flex-1 flex flex-col justify-between gap-4">
+  <div className="space-y-3">
+    <div className="flex items-center gap-4 text-[10px] text-slate-500">
+      <span className="flex items-center gap-1.5">
+        <h3 className="text-lg font-black text-white leading-tight group-hover:text-sky-400 transition-colors">
+          {art.title}
+        </h3>
+
+        <p className="text-xs md:text-sm text-red-500 whitespace-pre-line leading-relaxed">
+          {art.content}
+        </p>
+      </span>
+    </div>
+  </div>
+</div>
 
                       <h3 className="text-lg font-black text-white leading-tight group-hover:text-sky-400 transition-colors">
   {art.title}
